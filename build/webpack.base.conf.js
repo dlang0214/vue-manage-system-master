@@ -29,7 +29,8 @@ module.exports = {
       'vue$': 'vue/dist/vue.common.js',
       'src': resolve('src'),
       'assets': resolve('src/assets'),
-      'components': resolve('src/components')
+      'components': resolve('src/components'),
+      'jquery': 'jquery'
     }
   },
   module: {
@@ -61,6 +62,13 @@ module.exports = {
       }
     ]
   },
+    plugins: [
+        new webpack.optimize.CommonsChunkPlugin('common.js'),
+        new webpack.ProvidePlugin({
+            jQuery: "jquery",
+            $: "jquery"
+        })
+    ]
     // plugins: [
     //     new webpack.DllReferencePlugin({
     //       context: path.resolve(__dirname, '..'),

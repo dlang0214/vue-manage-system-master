@@ -2,8 +2,8 @@
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-menu"></i> 表格</el-breadcrumb-item>
-                <el-breadcrumb-item>年度盘点汇总</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-menu"></i> 差异化数据报表</el-breadcrumb-item>
+                <el-breadcrumb-item>年度汇总</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="handle-box">
@@ -23,16 +23,31 @@
         </el-date-picker>
         </div>
         <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+            <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="ym" label="日期" sortable width="150">
             </el-table-column>
-            <el-table-column prop="countNumber" label="总盘点数" sortable >
+            <el-table-column  label="固定资产未盘点总数" sortable >
+                <template scope="scope">
+                    {{scope.row.isF.countNumber}}
+                </template>
             </el-table-column>
-            <el-table-column prop="countUserNo" label="总人数" sortable>
+            <el-table-column  label="列管资产未盘点总数" sortable>
+                <template scope="scope">
+                    {{scope.row.isF.countANumber}}
+                </template>
             </el-table-column>
-            <el-table-column prop="countPda" label="列管总数" sortable >
+            <el-table-column label="未盘点状态" width="180">
+                <template scope="scope">
+                 <div v-if="scope.row.isF.isFinance==0">
+                     初盘
+                 </div>
+                    <div v-else="scope.row.isF.isFinance==1">
+                        复盘
+                    </div>
+                </template>
+
             </el-table-column>
-            <el-table-column prop="countPda" label="资管总数" sortable >
-            </el-table-column>
+
         </el-table>
     </div>
 </template>
@@ -56,16 +71,7 @@
                 select_word: '',
                 chartData:[],
                 is_search: false,
-                ischu:true,
-                options1: {
-                    title: "年度盘点汇总",
-                    bgColor: '#aaa',
-                    titleColor: '#ffffff',
-                    fillColor: '#e0f2f1',
-                    axisColor: '#ffffff',
-                    contentColor: '#999'
-                },
-
+                ischu:true
             }
         },
         created(){
@@ -114,7 +120,7 @@
                 let self = this;
                 let year = self.thisyear.getFullYear();
                 self.chartData=[];
-                self.url = self.hrefLoction+'PdaNumberYear.json?year='+year+'&isFinance=1';
+                self.url = self.hrefLoction+'PdaDifferYear.json?year='+year+'&isFinance=0';
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
@@ -133,7 +139,7 @@
                 let self = this;
                 let year = self.thisyear.getFullYear();
                 if(process.env.NODE_ENV === 'development'){
-                    self.url = self.hrefLoction+'PdaNumberYear.json?year='+year+'&isFinance=0';
+                    self.url = self.hrefLoction+'PdaDifferYear.json?year='+year+'&isFinance=1';
                 };
                 self.$axios.get( self.url
                 ).then((response) => {

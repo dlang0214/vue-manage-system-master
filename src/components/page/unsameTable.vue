@@ -295,7 +295,7 @@
                 if(self.thisyear==null || !self.thisyear){
                     return 0;
                 }
-                self.url = 'http://172.16.110.125:8080/swdAPP/common/PdaAssetUser/PdaWinYearDesc.json?year='+self.thisyear.getFullYear()+'&isFinance='+isFin;
+                self.url =self.hrefLoction+ 'PdaDifferYearDesc.json?year='+self.thisyear.getFullYear()+'&isFinance='+isFin;
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
@@ -331,9 +331,9 @@
                 }else {
                     isZ=0
                 }
-                self.url = 'http://172.16.110.125:8080/swdAPP/common/PdaAssetUser/PdaWinByCondition.json?year='
+                self.url =self.hrefLoction+ 'PdaDifferByCondition.json?year='
                     +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+(self.month+1)+
-                    '&pdsDesc='+self.userNo+'&pageSize=100'+'&isAdd='+isZ;
+                    '&pdaDesc='+self.userNo+'&pageSize=100'+'&isAdd='+isZ;
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);

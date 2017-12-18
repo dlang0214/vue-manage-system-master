@@ -3,193 +3,499 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-menu"></i> 表格</el-breadcrumb-item>
-                <el-breadcrumb-item>盘亏/已盘对比图</el-breadcrumb-item>
+                <el-breadcrumb-item>盘亏部门信息</el-breadcrumb-item>
             </el-breadcrumb>
+
         </div>
-        <div class="handle-box">
-                <el-checkbox v-model="isnotF">初盘</el-checkbox>
-                <el-checkbox v-model="isF">复盘</el-checkbox>
-        <span style="margin-left: 50px">选择年份：</span>
-        <el-date-picker
-            v-model="thisyear"
-            align="right"
-            type="year"
-            placeholder="选择年" @change="setYear">
+        <span style="position: absolute;top: 20px;right: 40px">
+               <el-switch
+                   v-model="ischu"
+                   on-color="#13ce66"
+                   off-color="#ff4949" >
+          </el-switch>
+            <span v-if="ischu==true" style="padding-left: 10px;padding-top: 4px" >复盘</span>
+            <span v-else style="padding-left: 10px;padding-top: 4px">初盘</span>
+
+            选择年：
+                <el-date-picker
+                    v-model="thisyear"
+                    align="right"
+                    type="year"
+                    placeholder="选择年" @change="getchuData">
         </el-date-picker>
+
+        </span>
+        <div>
+            <span style="width: 30%;display: inline-block">
+            月份选择：
+                <el-select v-model="month" placeholder="请选择"  style="width: 50%" @change="changeMonth">
+                    <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
+            </span>
+            <span style="width:55%;display: inline-block">
+                条件查询：
+            <el-input placeholder="根据部门查询" v-model="selcont" style="width: 80%" @change="selectPer">
+                <el-button slot="append" icon="search"></el-button>
+            </el-input>
+             </span>
+            <!--<span style="border-radius: 5px;border:  solid 1px #bfcbd9;padding: 8px" @click="getImport('table')">导出excel</span>-->
         </div>
-        <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange" >
-            <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="ym" label="年月" sortable width="150">
+        <el-table :data="tableData" border style="width: 100%;margin-top: 10px" ref="multipleTable" >
+            <el-table-column prop="DESCNAME" label="部门" sortable >
             </el-table-column>
-            <el-table-column  label="初盘/复盘" sortable width="120"  prop="ym">
-                <template scope="scope" style="padding-left: -18px;padding-right: -18px">
-                    <div style="border-bottom: solid 1px #dfe6ec;padding-left: 20px">初盘</div>
-                    <div style="padding-left: 20px">复盘</div>
-                </template>
+            <!--<el-table-column prop="countNumber" label="列管资产未盘点总数" sortable width="200">-->
+            <!--</el-table-column>-->
+            <el-table-column prop="NUM" label="固定资产未盘点总数" sortable >
             </el-table-column>
-            <el-table-column  label="总数量" sortable width="180">
-                <template scope="scope" style="padding-left: -18px;padding-right: -18px">
-                    <div style="border-bottom: solid 1px #dfe6ec">{{scope.row.isF.countNumber}}</div>
-                    <div>{{scope.row.isNotF.countNumber}}</div>
-                </template>
-            </el-table-column>
-            <el-table-column label="操作" width="180" >
+
+            <el-table-column label="操作" width="180">
                 <template scope="scope">
-                    <el-button size="small"
-                            @click="handleEdit(scope.$index, scope.row)">查看本月个人详情</el-button>
+                    <el-button size="small" @click="showPer(scope.row.DESCNAME)">查看盘点详情</el-button>
                 </template>
             </el-table-column>
         </el-table>
+        <div class="bgmess" v-show="bgmess">
+            <div class="bgclose" @click="bgclose"><i class="el-icon-close"></i></div>
+            <div class="bgcontent">
+                <el-table :data="perTaData" border style="width: 100%" ref="multipleTable"
+                          :row-class-name="tableRowClassName">
+                    <el-table-column prop="invCode" label="资产编号" sortable >
+                    </el-table-column>
+                    <el-table-column prop="fullName" label="责任人" sortable width="100">
+                    </el-table-column>
+                    <el-table-column prop="localtion" label="放置区域" width="120" sortable>
+                    </el-table-column>
+                    <el-table-column prop="isFinance" label="是否初盘" sortable width="120">
+                    </el-table-column>
+                    <el-table-column prop="isFinanceC" label="是否复盘" sortable width="120">
+                    </el-table-column>
+                    <el-table-column prop="description" label="资产名称" sortable width="120">
+                    </el-table-column>
+                    <el-table-column prop="desc" label="资产单位" sortable width="180">
+                    </el-table-column>
+                    <el-table-column label="操作" width="200">
+                        <template scope="scope">
+                            <el-button size="small" @click="messShow(scope.row,1)">初盘详情</el-button>
+                            <el-button size="small" @click="messShow(scope.row,2)">复盘详情</el-button>
+                            <!--<el-button size="small" @click="messShow(scope.row,3)">其他信息</el-button>-->
+                        </template>
+                    </el-table-column>
+                </el-table>
 
-
+                <div class="pagination">
+                    <el-pagination
+                        @current-change ="handleCurrentChange"
+                        layout="prev, pager, next"
+                        :total="100">
+                    </el-pagination>
+                </div>
+            </div>
+        </div>
+        <div class="bgmess" v-show="bgItem">
+            <div class="bgItemcontent">
+                <div class="bgItemclose" @click="bgItem=false"><i class="el-icon-close"></i></div>
+                <div class="itemTile">{{itemTile}}</div>
+                <div class="bgitem" v-for="(value,key) in bgItemData">
+                    <span>{{key}}</span><span style="color: #20a0ff;">{{value}}</span>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
-<script>
-    import Schart from 'vue-schart';
-    export default {
-        components: {
-            Schart
-        },
-        data() {
-            return {
-                tableData: [],//表格展示数据
-                chuData:[],   //初盘数据
-                fuData:[],   //复盘数据
-                cur_page: 1,
-                isnotF:true,
-                isF:true,
-                thisyear:new Date(),
-                multipleSelection: [],
-                select_cate: '',
-                select_word: '',
-                chartData:[],
-                is_search: false,
-                options1: {
-                    title: "年度盘点汇总",
-                    bgColor: '#aaa',
-                    titleColor: '#ffffff',
-                    fillColor: '#e0f2f1',
-                    axisColor: '#ffffff',
-                    contentColor: '#999'
-                },
 
+<script>
+    import axios from 'axios';
+    var idTmr;
+    function getExplorer() {
+        var explorer = window.navigator.userAgent;
+        if (explorer.indexOf("MSIE") >= 0 || (explorer.indexOf("Windows NT 6.1;") >= 0 && explorer.indexOf("Trident/7.0;") >= 0)) {
+            return 'ie';   //ie
+        }
+        else if (explorer.indexOf("Firefox") >= 0) {
+            return 'Firefox';  //firefox
+        }
+        else if (explorer.indexOf("Chrome") >= 0) {
+            return 'Chrome'; //Chrome
+        }
+        else if (explorer.indexOf("Opera") >= 0) {
+            return 'Opera';  //Opera
+        }
+        else if (explorer.indexOf("Safari") >= 0) {
+            return 'Safari';   //Safari
+        }
+    }
+    //此方法为ie导出之后,可以保留table格式的方法
+    function getIEsink(tableid) {
+        var curTbl = document.getElementById(tableid);
+        if (curTbl == null || curTbl == "") {
+            alert("没有数据");
+            return false;
+        }
+        var oXL;
+        try {
+            oXL = new ActiveXObject("Excel.Application"); //创建AX对象excel
+        } catch (e) {
+            alert("无法启动Excel!\n\n如果您确信您的电脑中已经安装了Excel，" + "那么请调整IE的安全级别。\n\n具体操作：\n\n" + "工具 → Internet选项 → 安全 → 自定义级别 → 对没有标记为安全的ActiveX进行初始化和脚本运行 → 启用");
+            return false;
+        }
+
+        var oWB = oXL.Workbooks.Add();
+        var oSheet = oWB.ActiveSheet;
+        var sel = document.body.createTextRange();
+        sel.moveToElementText(curTbl);
+        sel.select();
+        sel.execCommand("Copy");
+        oSheet.Paste();
+        oXL.Visible = true;
+    }
+    //此方法为ie导出之后,不保留table格式的方法
+    function getIEnotsink(tableid) {
+        var curTbl = document.getElementById(tableid);
+        if (curTbl == null || curTbl == "") {
+            alert("没有数据");
+            return false;
+        }
+        var oXL;
+        try {
+            oXL = new ActiveXObject("Excel.Application"); //创建AX对象excel
+        } catch (e) {
+            alert("无法启动Excel!\n\n如果您确信您的电脑中已经安装了Excel，" + "那么请调整IE的安全级别。\n\n具体操作：\n\n" + "工具 → Internet选项 → 安全 → 自定义级别 → 对没有标记为安全的ActiveX进行初始化和脚本运行 → 启用");
+            return false;
+        }
+
+        var oWB = oXL.Workbooks.Add();
+        var oSheet = oWB.ActiveSheet;
+        var Lenr = curTbl.rows.length;
+        for (i = 0; i < Lenr; i++) {
+            var Lenc = curTbl.rows(i).cells.length;
+            for (j = 0; j < Lenc; j++) {
+                oSheet.Cells(i + 1, j + 1).value = curTbl.rows(i).cells(j).innerText;
+            }
+        }
+        oXL.Visible = true;
+    }
+    function Cleanup() {
+        window.clearInterval(idTmr);
+        CollectGarbage();
+    }
+    var tableToExcel = (function () {
+        var uri = 'data:application/vnd.ms-excel;base64,',
+            template = '<html><head><meta charset="UTF-8"></head><body><table border="1">{table}</table></body></html>',
+            base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) },
+            format = function (s, c) {
+                return s.replace(/{(\w+)}/g,
+                    function (m, p) { return c[p]; })
+            };
+        return function (table, name) {
+            if (!table.nodeType) table = document.getElementById(table)
+            var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+            window.location.href = uri + base64(format(template, ctx))
+        }
+
+    })();
+    export default {
+        data: function(){
+            return {
+                ischu:true,//初盘or复盘
+                iszi:true,//资管or列管
+                tableData:[],//显示的数据
+                chuData:[],//获取的数据
+                selcont:"",//查询内容
+                options: [{
+                    value: 0,
+                    label: '1月'
+                }, {
+                    value: 1,
+                    label: '2月'
+                }, {
+                    value: 2,
+                    label: '3月'
+                }, {
+                    value: 3,
+                    label: '4月'
+                }, {
+                    value: 4,
+                    label: '5月'
+                },
+                    {
+                        value: 5,
+                        label: '6月'
+                    }, {
+                        value: 6,
+                        label: '7月'
+                    }, {
+                        value: 7,
+                        label: '8月'
+                    }, {
+                        value: 8,
+                        label: '9月'
+                    }, {
+                        value: 9,
+                        label: '10月'
+                    }, {
+                        value: 10,
+                        label: '11月'
+                    }, {
+                        value: 11,
+                        label: '12月'
+                    }
+                ],
+                month:new Date().getMonth(),//月份（提交后台要+1）
+                thisyear:new  Date(),//年份（提交后台要。getFullYear）
+                bgmess:false,//背景框是否展示
+                bgItem:false,//背景模块信息
+                perTaData:[],//背景数据
+                bgItemData: {},
+                itemTile:"初盘信息详情",
+                userNo:""//选中行的工号
             }
         },
         created(){
-            this.getchuData();
-            this.getfuData();
-
-        },
-        computed: {
-            data(){
-                const self = this;
-                return self.tableData.filter(function(d){
-                    let is_del = false;
-                    for (let i = 0; i < self.del_list.length; i++) {
-                        if(d.name === self.del_list[i].name){
-                            is_del = true;
-                            break;
-                        }
-                    }
-
-                    if(!is_del){
-                        if(d.address.indexOf(self.select_cate) > -1 &&
-                            (d.name.indexOf(self.select_word) > -1 ||
-                            d.address.indexOf(self.select_word) > -1)
-                        ){
-                            return d;
-                        }
-                    }
-                })
-            }
+            this.getchuData(1);//开始获取复盘的信息
         },
         watch:{
-            isnotF:function (val, oldVal) {
+            ischu:function (val, oldVal) {
                 if(val==true){
-
+                    this.getchuData(1)
+                }else {
+                    this.getchuData(0)
                 }
-            },
-            isF:function (val, oldVal) {
-
             }
-
         },
         methods: {
-            setYear:function () {
-                this.getchuData();
-                this.getfuData();
-                console.log(this.thisyear)
+            //设置表格
+            tableRowClassName(row, index) {
+                if (row.isFinance === "未初盘点") {
+                    return 'info-row';
+                }
+                return '';
             },
-            getchuData(){//获取初盘数据
+            bgclose:function(){
+                this.bgmess=false
+            },
+            //获取开始数据数据 isFin初盘or复盘
+            getchuData(isFin){
                 let self = this;
-                let year = self.thisyear.getFullYear();
-                self.chartData=[];
-                if(process.env.NODE_ENV === 'development'){
-                    self.url = 'http://172.16.110.125:8080/swdAPP/common/PdaAssetUser/PdaLossYear.json?year='+year;
-                };
+                console.log(self.thisyear);
+
+                if(self.thisyear==null || !self.thisyear){
+                    return 0;
+                }
+                self.url =self.hrefLoction+ 'PdaWinYearDesc.json?year='+self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+(self.month+1);
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
-                  self.chuData=response.data.dataInfo.listData;
-                  self.tableData= self.chuData;
-                  for (var i=0;i<self.chuData.length;i++){
-                      console.log("aaaa");
-                      self.chartData.push({name:i+1+"月",value:self.chuData[i].countNumber})
-                  }
+                    self.chuData=response.data.dataInfo.listData;//获取开始数据
+                    self.tableData= self.chuData[0].isF;//获取开始表格数据
+                    console.log(self.tableData);
 
-                  console.log(self.chartData);
-                }, (response) => {
-                    console.log('error');
-                });
-
-            },
-            getfuData(){//获取复盘数据
-                let self = this;
-                let year = self.thisyear.getFullYear();
-                if(process.env.NODE_ENV === 'development'){
-                    self.url = 'http://appinter.sunwoda.com/common/PdaAssetUser/PdaNumberYear.json?year='+year+'&isFinance=0';
-                };
-                self.$axios.get( self.url
-                ).then((response) => {
-                    console.log(response);
-                    self.fuData=response.data.dataInfo.listData;
 
                 }, (response) => {
                     console.log('error');
                 });
+            },
+            //月份更改函数
+            changeMonth:function () {
+                var isFin;
+                if(this.ischu==true){//初复盘选择 1复盘 0初盘
+                    isFin=1
+                }else {
+                    isFin=0
+                }
+                console.log(isFin);
+                this.getchuData(isFin);
+            },
+            //获取背景显示数据
+            setBgtable:function () {
+                console.log("aaa");
+                let self = this;
+                var isFin;
+                var isZ;
+                if(self.ischu==true){//初复盘选择 1复盘 0初盘
+                    isFin=1
+                }else {
+                    isFin=0
+                }
+                self.url =self.hrefLoction+ 'PdaWinByCondition.json?year='
+                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+(self.month+1)+
+                    '&pdaDesc='+self.userNo+'&pageSize=100';
+                self.$axios.get( self.url
+                ).then((response) => {
+                    console.log(response);
+                    self.perTaData=response.data.dataInfo.listData;
+                    this.bgmess=true
+                }, (response) => {
+                    console.log('error');
+                });
+            },
+            //盘点详情点击事件
+            showPer:function (userNo) {
+                console.log(userNo);
+                this.userNo=userNo;
+                this.setBgtable();
 
             },
-            search(){
-                this.is_search = true;
+            //根据条件查询（正则筛选）
+            selectPer:function () {
+                var vm =this;
+                var m=[];
+                console.log( vm.chuData[vm.month]);
+                if(vm.chuData.length<1){
+                    return 0
+                }
+                for (var i in vm.chuData[vm.month].isF){
+                    if(new RegExp(vm.selcont).test(vm.chuData[vm.month].isF[i].DESCNAME)){
+//                    vm.mainData=vm.mainData[i]
+                        m.push(vm.chuData[vm.month].isF[i])
+
+                    }
+                }
+                vm.tableData=m;
             },
-            formatter(row, column) {
-                return row.address;
+
+            messShow:function(data,ind){
+                this.bgItem=true;
+                console.log(ind);
+                if(ind == 1){//查看初盘信息
+                    this.itemTile="初盘信息详情";
+                    if(data.isFinance=="未初盘点"){
+                        this.bgItem=false;
+                        this.$message("未初盘点");
+                        return 0
+                    }
+                    this.bgItemData={
+                        初盘时间:data.invTimestr,
+                        初盘员工工号:data.invUserNo,
+                        初盘员工姓名:data.userName,
+                        设备初盘点状态:data.invStutasStr,
+                        初盘时是否更改标签:data.invReplaceStr,
+                        初盘时备注:data.invAdditional,
+                        是否初盘:data.isFinance,
+                        初盘部门:data.pdaDesc
+                    }
+                }
+                if(ind == 2){//查看复盘信息
+                    this.itemTile="复盘信息详情",
+                        this.bgItemData={
+                            复盘时间:data.invTimeCstr,
+                            复盘员工工号:data.invUserNoC,
+                            复盘员工姓名:data.userNameC,
+                            设备复盘点状态:data.invStutasStrC,
+                            复盘时是否更改标签:data.invReplaceStrC,
+                            复盘时备注:data.invAdditionalC,
+                            是否复盘:data.isFinanceC,
+                            复盘部门:data.pdaDescC
+                        }
+                }
+                if(ind == 3){//查看其他信息
+
+                }
+                console.log(data)
             },
-            filterTag(value, row) {
-                return row.tag === value;
+            //背景页码更换函数
+            handleCurrentChange(val){
+                console.log(val);
+
             },
-            handleEdit(index, row) {
-                this.$message('编辑第'+(index+1)+'行');
-            },
-            handleDelete(index, row) {
-                this.$message.error('删除第'+(index+1)+'行');
-            },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
-            }
+
+
+        },
+        computed:{
+
+        },
+        beforeMount(){
+
         }
     }
 </script>
 
-<style scoped>
-.handle-box{
-    margin-bottom: 20px;
-}
-.handle-select{
-    width: 120px;
-}
-.handle-input{
-    width: 300px;
-    display: inline-block;
-}
+<style >
+    .table .el-input-group__prepend {
+
+        width: 80px;
+
+    }
+    .el-table .info-row {
+        background: #c9e5f5;
+    }
+
+    .bgmess{
+        position: fixed;
+        top:70px;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+    .bgmess .bgcontent{
+        max-height: 80%;
+        max-width: 90%;
+        min-width: 80%;
+        background: #fff;
+        overflow: scroll;
+        position: relative;
+    }
+    .bgItemcontent{
+        background: #fff;
+        padding: 20px;
+        position: absolute;
+        padding-top: 10px;
+    }
+    .bgItemcontent .bgitem{
+        height: 40px;
+        line-height: 40px;
+        border-bottom: solid 1px #eee;
+
+    }
+    .itemTile{
+        text-align: center;
+        height: 40px;
+        line-height: 40px;
+        border-bottom: solid 1px #eee;
+    }
+    .bgItemcontent .bgitem span{
+        width: 200px;
+        display: inline-block;
+        color: #555;
+    }
+
+    .bgItemclose{
+        position: absolute;
+        top: -45px;
+        right: 10px;
+        width: 35px;
+        height: 35px;
+        border: solid 2px #fff;
+        border-radius: 50%;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 15px;
+    }
+    .bgclose{
+        position: absolute;
+        top: 10px;
+        right: 30px;
+        width: 35px;
+        height: 35px;
+        border: solid 2px #fff;
+        border-radius: 50%;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 15px;
+    }
 </style>

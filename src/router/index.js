@@ -26,6 +26,14 @@ export default new Router({
                     component: resolve => require(['../components/page/PankuiTable.vue'], resolve)
                 },
                 {
+                    path: '/loseall',
+                    component: resolve => require(['../components/page/LoseAll.vue'], resolve)
+                },
+                {
+                    path: '/selectmess',
+                    component: resolve => require(['../components/page/selectMess.vue'], resolve)
+                },
+                {
                     path: '/losetable',
                     component: resolve => require(['../components/page/LoseTable.vue'], resolve)
                 },
@@ -36,6 +44,10 @@ export default new Router({
                 {
                     path: '/unsametable',
                     component: resolve => require(['../components/page/unsameTable.vue'], resolve)     // vue-datasource组件
+                },
+                {
+                    path: '/unsameall',
+                    component: resolve => require(['../components/page/UnSameAll.vue'], resolve)     // vue-datasource组件
                 },
                 {
                     path: '/baseform',

@@ -6,53 +6,90 @@
                 <el-breadcrumb-item>手工盘点</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
-        <div class="form-box">
-            <el-form ref="form" :model="form" label-width="80px">
-                <el-form-item label="表单名称">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="选择器">
-                    <el-select v-model="form.region" placeholder="请选择">
-                        <el-option key="bbk" label="步步高" value="bbk"></el-option>
-                        <el-option key="xtc" label="小天才" value="xtc"></el-option>
-                        <el-option key="imoo" label="imoo" value="imoo"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="日期时间">
-                    <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
-                    </el-col>
-                    <el-col class="line" :span="2">-</el-col>
-                    <el-col :span="11">
-                        <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="选择开关">
-                    <el-switch on-text="" off-text="" v-model="form.delivery"></el-switch>
-                </el-form-item>
-                <el-form-item label="多选框">
-                    <el-checkbox-group v-model="form.type">
-                        <el-checkbox label="步步高" name="type"></el-checkbox>
-                        <el-checkbox label="小天才" name="type"></el-checkbox>
-                        <el-checkbox label="imoo" name="type"></el-checkbox>
-                    </el-checkbox-group>
-                </el-form-item>
-                <el-form-item label="单选框">
-                    <el-radio-group v-model="form.resource">
-                        <el-radio label="步步高"></el-radio>
-                        <el-radio label="小天才"></el-radio>
-                        <el-radio label="imoo"></el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="文本框">
-                    <el-input type="textarea" v-model="form.desc"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="onSubmit">提交</el-button>
-                    <el-button>取消</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
+        <el-tabs v-model="activeName">
+            <el-tab-pane label="固定资产录入" name="first">
+                <div class="form-box">
+                <el-form ref="form" :model="formGu" label-width="100px">
+                    <el-form-item label="资产编号">
+                        <el-input v-model="formGu.invCode"></el-input>
+                    </el-form-item>
+                    <el-form-item label="盘点时间">
+                        <el-date-picker type="date" placeholder="选择日期" v-model="date1" style="width: 100%;"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="盘点人">
+                        <el-input v-model="formGu.invUserNo"></el-input>
+                    </el-form-item>
+                    <el-form-item label="备注">
+                        <el-input v-model="formGu.invAdditional"></el-input>
+                    </el-form-item>
+                    <el-form-item label="盘点部门">
+                        <el-input v-model="formGu.pdaDesc"></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="初盘/复盘">
+                        <el-radio-group v-model="formGu.isFinance">
+                            <el-radio label="0">初盘</el-radio>
+                            <el-radio label="1">复盘</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="更改标签">
+                            <el-switch v-model="formGu.invReplace"
+                                       on-text="是"
+                                       off-text="否"
+                            >
+                            </el-switch>
+                    </el-form-item>
+                    <el-form-item label="盘点状态">
+                        <el-radio-group v-model="formGu.invStutas">
+                            <el-radio label="1">表示正常使用</el-radio>
+                            <el-radio label="2">表示闲置资产</el-radio>
+                            <el-radio label="3">表示待维修</el-radio>
+                            <el-radio label="4">表示待报废</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+
+                    <el-form-item>
+                        <el-button type="primary" @click="onSubmit">提交</el-button>
+                        <el-button>取消</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+            </el-tab-pane>
+            <el-tab-pane label="异常资产录入" name="second">
+                <div class="form-box">
+                <el-form ref="form" :model="form" label-width="100px">
+                    <el-form-item label="资产编号">
+                        <el-input v-model="form.tagNumber"></el-input>
+                    </el-form-item>
+                    <el-form-item label="资产名称">
+                        <el-input v-model="form.description"></el-input>
+                    </el-form-item>
+                    <el-form-item label="盘点时间">
+                        <el-date-picker type="date" placeholder="选择日期" v-model="date2" style="width: 100%;"></el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="规格型号">
+                        <el-input v-model="form.modelNumber"></el-input>
+                    </el-form-item>
+                    <el-form-item label="使用部门">
+                        <el-input v-model="form.desc"></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="初盘/复盘">
+
+                            <el-radio-group v-model="form.isFinance">
+                                <el-radio label="0">初盘</el-radio>
+                                <el-radio label="1">复盘</el-radio>
+                            </el-radio-group>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="onSubmitY">提交</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+            </el-tab-pane>
+
+        </el-tabs>
+
 
     </div>
 </template>
@@ -61,21 +98,121 @@
     export default {
         data: function(){
             return {
-                form: {
-                    name: '',
-                    region: '',
-                    date1: '',
-                    date2: '',
-                    delivery: true,
-                    type: ['步步高'],
-                    resource: '小天才',
-                    desc: ''
+                activeName:"first",
+                date1:new Date(),
+                date2:new Date(),
+                formGu:{
+                    invYM:"",
+                    invCode:"",
+                    invTimeStr:"",
+                    invUserNo:"",
+                    invStutas:"1",
+                    invReplace:false,
+                    invAdditional:"",
+                    isFinance:"0",
+                    pdaDesc:"",
+                },
+                form:{
+                    tagNumber:"",
+                    desc:"",
+                    description:"",
+                    modelNumber:"",
+                    isFinance:"0",
+                    addDateString:""
                 }
             }
         },
         methods: {
             onSubmit() {
-                this.$message.success('提交成功！');
+                var vm = this;
+                console.log(this.formGu);
+                 if(vm.formGu.invReplace==true){
+                     vm.formGu.invReplace=1
+                 }else {
+                     vm.formGu.invReplace=0
+                 }
+                if( vm. formGu.invCode==""){
+                    vm.$message("资产编号不能为空");
+                    return 0
+                }
+                if( vm.formGu.invUserNo==""){
+                    vm.$message("盘点人不能为空");
+                    return 0
+                }
+                if( vm.formGu.pdaDesc==""){
+                    vm.$message("盘点部门不能为空");
+                    return 0
+                }
+                 var month;
+                 var day;
+                 if(this.date1.getMonth()+1<10){
+                     month="0"+(this.date1.getMonth()+1)
+                 }else {
+                     month=(this.date1.getMonth()+1)
+                 }
+                if(this.date1.getDate()<10){
+                   day="0"+this.date1.getDate()
+                }else {
+                    day=this.date1.getDate()
+                }
+                this.formGu.invYM=this.date1.getFullYear()+""+month
+                this.formGu.invTimeStr=this.date1.getFullYear()+"-"+month+"-"+day+" "+"00:00:00"
+
+                $.ajax({
+                    type:"post",
+                    url:"http://appinter.sunwoda.com/common/PdaAssetUser/check.json",
+                    data:vm.formGu,
+                    dataType:"json",
+                    success:function (data) {
+                        vm.$message(data.message);
+                    },
+                    error:function (da) {
+                        vm.$message(data.message);
+                    }
+                });
+            },
+            onSubmitY(){
+                console.log("Aaaa");
+                console.log(this.form);
+                var vm = this;
+                var month;
+                if(this.date1.getMonth()+1<10){
+                    month="0"+(vm.date2.getMonth()+1)
+                }else {
+                    month=(vm.date2.getMonth()+1)
+                }
+                vm.form.addDateString = vm.date2.getFullYear()+""+month;
+                if( vm.form.tagNumber==""){
+                    vm.$message("资产编号不能为空");
+                    return 0
+                }
+                if( vm.form.description==""){
+                    vm.$message("资产名称不能为空");
+                    return 0
+                }
+                if( vm.form.desc==""){
+                    vm.$message("使用部门不能为空");
+                    return 0
+                }
+                $.ajax({
+                    type:"post",
+                    url:"http://appinter.sunwoda.com/common/PdaAssetUser/insertPdaDifferent.json",
+                    data:vm.form,
+                    dataType:"json",
+                    success:function (data) {
+                        console.log(data);
+                        if(data.statusCode==0){
+                            vm.$message(data.message);
+                            vm.form={}
+                        }
+                        else {
+                            vm.$message(data.message);
+                        }
+                    },
+                    error:function (da) {
+                        console.log(da);
+                    }
+                });
             }
         }
     }

@@ -33,43 +33,73 @@
                     {
                         icon: 'el-icon-menu',
                         index: '2',
-                        title: '表格',
+                        title: '人员盘点报表',
                         subs: [
                             {
                                 index: 'basetable',
-                                title: '年度盘点汇总'
+                                title: '人员年度盘点汇总'
                             },
                             {
                                 index: 'vuetable',
-                                title: '人员盘点汇总'
+                                title: '人员盘点详情'
                             },
-                            {
-                                index: 'pankuitable',
-                                title: '盘亏报表'
-                            },
-                            {
-                                index: 'losetable',
-                                title: '未盘对比'
-                            },
-                            {
-                                index: 'unsametable',
-                                title: '差异化报表'
-                            }
+
                         ]
                     },
                     {
-                        icon: 'el-icon-date',
+                        icon: 'el-icon-circle-check',
                         index: '3',
-                        title: '表单',
+                        title: '盘亏盘赢报表',
+                        subs: [
+                            {
+                                index: 'loseall',
+                                title: '年度盘亏盘赢汇总',
+                            },
+                            {
+                                index: 'pankuitable',
+                                title: '盘亏部门信息'
+                            },
+                            {
+                                index: 'losetable',
+                                title: '盘赢部门信息'
+                            },
+
+                        ]
+                    },
+                    {
+                        icon: 'el-icon-document',
+                        index: '4',
+                        title: '差异化数据报表',
+                        subs: [
+                            {
+                                index: 'unsameall',
+                                title: '差异化年度汇总'
+                            },
+                            {
+                                index: 'unsametable',
+                                title: '差异化详情'
+                            }
+
+                        ]
+                    },
+                    {
+                        icon: 'el-icon-search',
+                        index: 'selectmess',
+                        title: '查询资产信息'
+                    },
+                    {
+                        icon: 'el-icon-edit',
+                        index: '6',
+                        title: '资产信息录入',
                         subs: [
                             {
                                 index: 'baseform',
                                 title: '手工盘点'
                             },
-//                            {
-//                                index: 'vueeditor',
-//                                title: '编辑器'
-//                            },
+                            {
+                                index: 'vueeditor',
+                                title: '批量导入'
+                            },
 //                            {
 //                                index: 'markdown',
 //                                title: 'markdown'

@@ -15,7 +15,6 @@
           </el-switch>
             <span v-if="ischu==true" style="padding-left: 10px;padding-top: 4px" >复盘</span>
             <span v-else style="padding-left: 10px;padding-top: 4px">初盘</span>
-
             选择年：
                 <el-date-picker
                     v-model="thisyear"
@@ -76,8 +75,9 @@
                    <el-switch
                        v-model="iszi"
                        on-color="#13ce66"
-                       off-color="#ff4949" @change="setBgtable">
+                       off-color="#ff4949" @change="setBgtable(1)">
                    </el-switch>
+                <el-button @click="download">下载全部</el-button>
                 </span>
             <div class="bgcontent">
                 <el-table :data="perTaData" border style="width: 100%" ref="multipleTable"
@@ -109,7 +109,8 @@
                     <el-pagination
                         @current-change ="handleCurrentChange"
                         layout="prev, pager, next"
-                        :total="100">
+                        :page-size="10"
+                        :total="totolPage">
                     </el-pagination>
                 </div>
             </div>
@@ -128,6 +129,7 @@
 
 <script>
     import axios from 'axios';
+    import ElButton from "../../../node_modules/element-ui/packages/button/src/button.vue";
     var idTmr;
     function getExplorer() {
         var explorer = window.navigator.userAgent;
@@ -217,6 +219,7 @@
 
     })();
     export default {
+        components: {ElButton},
         data: function(){
             return {
                 ischu:true,//初盘or复盘
@@ -271,7 +274,8 @@
                 perTaData:[],//背景数据
                 bgItemData: {},
                 itemTile:"初盘信息详情",
-                userNo:""//选中行的工号
+                userNo:"",//选中行的工号
+                totolPage:100
             }
         },
         created(){
@@ -306,7 +310,7 @@
                 if(self.thisyear==null || !self.thisyear){
                     return 0;
                 }
-                self.url = 'http://172.16.110.125:8080/swdAPP/common/PdaAssetUser/PdaNumberByUser.json?year='+self.thisyear.getFullYear()+'&isFinance='+isFin;
+                self.url = self.hrefLoction+'PdaNumberByUser.json?year='+self.thisyear.getFullYear()+'&isFinance='+isFin;
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
@@ -326,7 +330,7 @@
                 this.tableData = this.chuData[this.month].pdaNumberList;
             },
             //获取背景显示数据
-            setBgtable:function () {
+            setBgtable:function (page) {
                 console.log("aaa");
                 let self = this;
                 var isFin;
@@ -336,20 +340,20 @@
                 }else {
                     isFin=0
                 }
-
                 if(self.iszi==true){//资管、列管选择
                     isZ=1
                 }else {
                     isZ=0
                 }
-                self.url = 'http://172.16.110.125:8080/swdAPP/common/PdaAssetUser/PdaByCondition.json?year='
+                self.url = self.hrefLoction+'PdaByCondition.json?year='
                     +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+(self.month+1)+
-                    '&userNo='+self.userNo+'&pageSize=100'+'&isAdd='+isZ;
+                    '&userNo='+self.userNo+'&pageSize=10'+'&isAdd='+isZ+"&page="+page;
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
                     self.perTaData=response.data.dataInfo.listData;
                     this.bgmess=true
+                    self.totolPage=response.data.dataInfo.pageInfo.totalRecord
                 }, (response) => {
                     console.log('error');
                 });
@@ -358,7 +362,7 @@
             showPer:function (userNo) {
                 console.log(userNo);
                 this.userNo=userNo;
-                this.setBgtable();
+                this.setBgtable(1);
 
             },
             //根据查询人（正则筛选）
@@ -437,9 +441,12 @@
             //背景页码更换函数
             handleCurrentChange(val){
                 console.log(val);
-
+                this.setBgtable(val);
             },
-
+            download:function () {
+                window.location.href='http://172.30.128.32:8080/swdAPP/common/PdaAssetUser/downloadExcel.json' +
+                    '?year=2017&isFinance=1&month=11&userNo=170517010&pageSize=-1&isAdd=1&method=pdaByWin'
+            },
             //导出excel
             getImport: function (tableid) {
 

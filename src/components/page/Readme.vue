@@ -13,8 +13,17 @@
                 <h2>功能</h2>
                 <el-checkbox disabled checked>年度盘点汇总</el-checkbox>
                 <br>
-                <el-checkbox disabled checked>月度盘点汇总</el-checkbox>
-
+                <el-checkbox disabled checked>人员盘点信息</el-checkbox>
+                <br>
+                <el-checkbox disabled checked>盘亏盘赢信息汇总</el-checkbox>
+                <br>
+                <el-checkbox disabled checked>差异化信息汇总</el-checkbox>
+                <br>
+                <el-checkbox disabled checked>资产信息查询</el-checkbox>
+                <br>
+                <el-checkbox disabled checked>资产信息录入</el-checkbox>
+                <br>
+                <el-checkbox disabled checked>资产信息批量导入</el-checkbox>
             </article>
         </div>
 
