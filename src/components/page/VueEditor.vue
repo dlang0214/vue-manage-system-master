@@ -8,10 +8,11 @@
         </div>
         <div class="plugins-tips">
            导入的文件必须是Excel文件，格式如下（必须严格遵循下面格式）
+            注:盘点状态必须为“正常使用”、“闲置资产”、“待维修”、“待报废”四种
             <!--<el-button icon="upload2">下载模板</el-button>-->
         </div>
         <el-tabs v-model="activeName2" >
-            <el-tab-pane label="固定资产导入" name="first">
+            <el-tab-pane label="盘点信息导入" name="first">
                 <el-table
                     :data="tableData"
                     stripe
@@ -56,7 +57,15 @@
                         prop="pDept"
                         label="盘点部门">
                     </el-table-column>
+                    <el-table-column
+                        prop="pDept"
+                        label="使用部门">
+                    </el-table-column>
                 </el-table>
+                <div class="errorMess" v-show="errorMess" >
+                       批量导入错误信息：<br>
+                       <div v-for="i in errorlist">{{i}}</div>
+                </div>
                 <div style="margin-top: 10px">
                     <el-button type="primary" style="position: relative">选择文件<i class="el-icon-upload el-icon--right"></i>
                         <input type="file" id="file" @change="getFile" style="position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0"/>
@@ -65,7 +74,7 @@
                     </el-button>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="异常资产导入" name="second">
+            <el-tab-pane label="资产盘点异常报告导入" name="second">
                 <el-table
                     :data="tableDataY"
                     stripe
@@ -97,6 +106,10 @@
                         label="初盘/复盘">
                     </el-table-column>
                 </el-table>
+                <div class="errorMess" v-show="errorMessY" >
+                    批量导入错误信息：<br>
+                    <div v-for="i in errorlistY">{{i}}</div>
+                </div>
                 <div style="margin-top: 10px">
                     <el-button type="primary" style="position: relative">选择文件<i class="el-icon-upload el-icon--right"></i>
                         <input type="file" id="file1" @change="getFile1" style="position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0"/>
@@ -120,8 +133,12 @@
             return {
                 fileName:"",
                 fileName1:"",
+                errorMess:false,
+                errorlist:[],
                 files:[],
                 files1:[],
+                errorMessY:false,
+                errorlistY:[],
                 activeName2:"first",
                 tableData: [
                     {
@@ -208,6 +225,8 @@
 
         methods: {
             getFile:function () {
+                this.errorlist = [];
+                this.errorMess = false
                 var file=document.getElementById("file").files[0];
                 console.log(file);
                 this.fileName=file.name
@@ -231,7 +250,17 @@
                     mimeType: "multipart/form-data",
                     success: function (data) {
                         var obj = JSON.parse(data);
-                        vm.$message(obj["message"]);
+                        console.log(obj);
+                        console.log(obj.dataInfo)
+                        if(obj["extData"] == -10000){
+                            vm.$message(obj["message"]);
+                            return 0;
+                        }
+                        vm.$message("成功"+obj["dataInfo"].listData.length+"条！"+"失败"+obj["extData"].length+"条！");
+                        vm.errorlist = obj["extData"];
+                       if(vm.errorlist.length>0){
+                           vm.errorMess = true
+                       }
                     },
                     error:function () {
                         vm.$message("上传错误");
@@ -263,7 +292,15 @@
                     success: function (data) {
                         console.log(data)
                         var obj = JSON.parse(data);
-                        vm.$message(obj["message"]);
+                        if(obj["extData"] == -10000){
+                            vm.$message(obj["message"]);
+                            return 0;
+                        }
+                        vm.$message("成功"+obj["dataInfo"].listData.length+"条！"+"失败"+obj["extData"].length+"条！");
+                        vm.errorlistY = obj["extData"];
+                        if(vm.errorlistY.length>0){
+                            vm.errorMessY = true
+                        }
                     },
                     error:function () {
                         vm.$message("上传错误");
@@ -280,4 +317,18 @@
     .editor-btn{
         margin-top: 20px;
     }
+    .errorMess {
+        height: 200px;
+        overflow-y: scroll;
+        margin-left: 50px;
+        color: red;
+        z-index: 999;
+        border: solid 1px #aaa;
+        margin-right: 50px;
+        margin-top: 30px;
+        padding-left: 30px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
 </style>

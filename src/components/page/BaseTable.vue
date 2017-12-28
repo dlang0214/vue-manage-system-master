@@ -8,6 +8,7 @@
         </div>
         <div class="handle-box">
           <el-switch
+                @change="changeChu"
                 v-model="ischu"
                 on-color="#13ce66"
                 off-color="#ff4949">
@@ -25,11 +26,11 @@
         <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
             <el-table-column prop="ym" label="日期" sortable width="150">
             </el-table-column>
-            <el-table-column prop="countNumber" label="总盘点数" sortable >
+            <el-table-column prop="countUserNoA" label="列管盘点总人数" sortable >
             </el-table-column>
-            <el-table-column prop="countUserNo" label="总人数" sortable>
+            <el-table-column prop="countUserNo" label="资管盘点总人数" sortable>
             </el-table-column>
-            <el-table-column prop="countPda" label="列管总数" sortable >
+            <el-table-column prop="countPdaA" label="列管总数" sortable >
             </el-table-column>
             <el-table-column prop="countPda" label="资管总数" sortable >
             </el-table-column>
@@ -96,19 +97,20 @@
             }
         },
         watch:{
-            ischu:function (val, oldVal) {
-                if(val==true){
-                    this.tableData=this.chuData;
-                }else {
-                    this.tableData=this.fuData;
-                }
-            }
+
         },
         methods: {
             setYear:function () {
                 this.getchuData();
                 this.getfuData();
                 console.log(this.thisyear)
+            },
+            changeChu:function () {
+                if(this.ischu == true){
+                    this.tableData=this.chuData;
+                }else {
+                    this.tableData=this.fuData;
+                }
             },
             getchuData(){//获取初盘数据
                 let self = this;
@@ -120,11 +122,6 @@
                     console.log(response);
                   self.chuData=response.data.dataInfo.listData;
                   self.tableData= self.chuData;
-                  for (var i=0;i<self.chuData.length;i++){
-                      console.log("aaaa");
-                      self.chartData.push({name:i+1+"月",value:self.chuData[i].countNumber})
-                  }
-                  console.log(self.chartData);
                 }, (response) => {
                     console.log('error');
                 });
@@ -132,9 +129,7 @@
             getfuData(){//获取复盘数据
                 let self = this;
                 let year = self.thisyear.getFullYear();
-                if(process.env.NODE_ENV === 'development'){
-                    self.url = self.hrefLoction+'PdaNumberYear.json?year='+year+'&isFinance=0';
-                };
+               self.url = self.hrefLoction+'PdaNumberYear.json?year='+year+'&isFinance=0';
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);

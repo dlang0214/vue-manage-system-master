@@ -49,7 +49,7 @@
              </span>
             <span style="border-radius: 5px;border:  solid 1px #bfcbd9;padding: 8px" @click="getImport('table')">导出excel</span>
         </div>
-        <el-table :data="tableData" border style="width: 100%;margin-top: 10px" ref="multipleTable" >
+        <el-table :data="tableData" border style="width: 100%;margin-top: 10px" ref="multipleTable"  height="520">
             <el-table-column prop="userNo" label="工号" sortable width="150">
             </el-table-column>
             <el-table-column prop="userName" label="姓名" sortable width="120">
@@ -81,20 +81,20 @@
                 </span>
             <div class="bgcontent">
                 <el-table :data="perTaData" border style="width: 100%" ref="multipleTable"
-                          :row-class-name="tableRowClassName">
+                          :row-class-name="tableRowClassName" >
                     <el-table-column prop="invCode" label="资产编号" sortable width="100">
                     </el-table-column>
                     <el-table-column prop="fullName" label="责任人" sortable width="100">
                     </el-table-column>
                     <el-table-column prop="localtion" label="放置区域" width="120" sortable>
                     </el-table-column>
-                    <el-table-column prop="isFinance" label="是否初盘" sortable width="120">
+                    <el-table-column prop="isFinance" label="是否初盘" sortable>
                     </el-table-column>
-                    <el-table-column prop="isFinanceC" label="是否复盘" sortable width="120">
+                    <el-table-column prop="isFinanceC" label="是否复盘" sortable >
                     </el-table-column>
-                    <el-table-column prop="description" label="资产名称" sortable width="120">
+                    <el-table-column prop="description" label="资产名称" sortable >
                     </el-table-column>
-                    <el-table-column prop="desc" label="资产单位" sortable width="180">
+                    <el-table-column prop="desc" label="资产单位" sortable >
                     </el-table-column>
                     <el-table-column label="操作" width="200">
                         <template scope="scope">
@@ -282,11 +282,13 @@
             this.getchuData(1);//开始获取复盘的信息
         },
         watch:{
-
             ischu:function (val, oldVal) {
                 if(val==true){
-                    this.getchuData(1)
+                    this.selcont = "";
+                    this.getchuData(1);
+
                 }else {
+                    this.selcont = "";
                     this.getchuData(0)
                 }
             }
@@ -340,13 +342,19 @@
                 }else {
                     isFin=0
                 }
+                var mon
+                if(self.month+1 > 10){
+                    mon = self.month+1
+                }else {
+                    mon = "0"+  self.month
+                }
                 if(self.iszi==true){//资管、列管选择
                     isZ=1
                 }else {
                     isZ=0
                 }
                 self.url = self.hrefLoction+'PdaByCondition.json?year='
-                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+(self.month+1)+
+                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+mon+
                     '&userNo='+self.userNo+'&pageSize=10'+'&isAdd='+isZ+"&page="+page;
                 self.$axios.get( self.url
                 ).then((response) => {
@@ -444,8 +452,31 @@
                 this.setBgtable(val);
             },
             download:function () {
-                window.location.href='http://172.30.128.32:8080/swdAPP/common/PdaAssetUser/downloadExcel.json' +
-                    '?year=2017&isFinance=1&month=11&userNo=170517010&pageSize=-1&isAdd=1&method=pdaByWin'
+                var self = this
+                var isFin;
+                var isZ;
+                console.log("aaaaa");
+                console.log(self.userNo);
+                if(self.ischu==true){//初复盘选择 1复盘 0初盘
+                    isFin=1
+                }else {
+                    isFin=0
+                }
+
+                if(self.iszi==true){//资管、列管选择
+                    isZ=1
+                }else {
+                    isZ=0
+                }
+                var mon
+                if(self.month+1 > 9){
+                    mon = self.month+1
+                }else {
+                    mon = "0"+  (self.month+1)
+                }
+                window.location.href=this.hrefLoction+'downloadExcel.json?year='
+                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+mon+
+                    '&userNo='+self.userNo+'&isAdd='+isZ+"&method=pdaByUser"+'&pageSize=-1';
             },
             //导出excel
             getImport: function (tableid) {

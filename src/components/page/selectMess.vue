@@ -39,15 +39,15 @@
                 <el-table :data="perTaData" border style="width: 100%;position: relative" ref="multipleTable"  v-loading.body="loading">
                     <el-table-column prop="invYM" label="月份" sortable width="100">
                     </el-table-column>
-                    <el-table-column prop="fullName" label="责任人" sortable width="100">
+                    <el-table-column prop="fullName" label="责任人" sortable >
                     </el-table-column>
-                    <el-table-column prop="localtion" label="放置区域" width="120" sortable>
+                    <el-table-column prop="localtion" label="放置区域"  sortable>
                     </el-table-column>
-                    <el-table-column prop="isFinance" label="是否初盘" sortable width="120">
+                    <el-table-column prop="isFinance" label="是否初盘" sortable>
                     </el-table-column>
-                    <el-table-column prop="isFinanceC" label="是否复盘" sortable width="120">
+                    <el-table-column prop="isFinanceC" label="是否复盘" sortable >
                     </el-table-column>
-                    <el-table-column prop="description" label="资产名称" sortable width="120">
+                    <el-table-column prop="description" label="资产名称" sortable>
                     </el-table-column>
                     <el-table-column prop="desc" label="资产单位" sortable width="180">
                     </el-table-column>

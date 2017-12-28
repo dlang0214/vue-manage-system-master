@@ -49,11 +49,11 @@
                     {
                         icon: 'el-icon-circle-check',
                         index: '3',
-                        title: '盘亏盘赢报表',
+                        title: '盘亏盘盈报表',
                         subs: [
                             {
                                 index: 'loseall',
-                                title: '年度盘亏盘赢汇总',
+                                title: '年度盘亏盘盈汇总',
                             },
                             {
                                 index: 'pankuitable',
@@ -61,7 +61,7 @@
                             },
                             {
                                 index: 'losetable',
-                                title: '盘赢部门信息'
+                                title: '盘盈部门信息'
                             },
 
                         ]
@@ -90,7 +90,7 @@
                     {
                         icon: 'el-icon-edit',
                         index: '6',
-                        title: '资产信息录入',
+                        title: '盘点信息录入',
                         subs: [
                             {
                                 index: 'baseform',

@@ -3,7 +3,7 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-menu"></i> 表格</el-breadcrumb-item>
-                <el-breadcrumb-item>年度盘亏盘赢汇总</el-breadcrumb-item>
+                <el-breadcrumb-item>年度盘亏盘盈汇总</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
 
@@ -11,6 +11,7 @@
             <el-tab-pane label="盘亏年度汇总" name="first">
                 <div class="handle-box">
                     <el-switch
+                        @change="changeChu"
                         v-model="ischu"
                         on-color="#13ce66"
                         off-color="#ff4949">
@@ -53,9 +54,10 @@
 
 
             </el-tab-pane>
-            <el-tab-pane label="盘赢年度汇总" name="second">
+            <el-tab-pane label="盘盈年度汇总" name="second">
                 <div class="handle-box">
                     <el-switch
+                        @change="changeChuY"
                         v-model="ischu"
                         on-color="#13ce66"
                         off-color="#ff4949">
@@ -113,7 +115,7 @@
                 url:"",
                 activeName:"first",
                 tableData: [],//表格展示数据
-                tableDataY:[],//盘赢表格数据
+                tableDataY:[],//盘盈表格数据
                 chuData:[],   //初盘数据
                 chuDataY:[],
                 fuDataY:[],
@@ -158,15 +160,7 @@
             }
         },
         watch:{
-            ischu:function (val, oldVal) {
-                if(val==true){
-                    this.tableData=this.chuData;
-                    this.tableDataY=this.chuDataY;
-                }else {
-                    this.tableData=this.fuData;
-                    this.tableDataY=this.fuDataY;
-                }
-            }
+
         },
         methods: {
             setYear:function () {
@@ -175,6 +169,20 @@
                 this.getchuDataY();
                 this.getfuDataY();
                 console.log(this.thisyear)
+            },
+            changeChuY:function () {
+                if(this.ischu == true){
+                    this.tableDataY=this.chuDataY;
+                }else {
+                    this.tableDataY=this.fuDataY;
+                }
+            },
+            changeChu:function () {
+                if(this.ischu == true){
+                    this.tableData=this.chuData;
+                }else {
+                    this.tableData=this.fuData;
+                }
             },
             getchuData(){//获取初盘数据
                 let self = this;
@@ -198,9 +206,7 @@
             getfuData(){//获取复盘数据
                 let self = this;
                 let year = self.thisyear.getFullYear();
-                if(process.env.NODE_ENV === 'development'){
-                    self.url = self.hrefLoction+'PdaLossYear.json?year='+year+'&isFinance=0';
-                };
+                self.url = self.hrefLoction+'PdaLossYear.json?year='+year+'&isFinance=0';
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
@@ -228,9 +234,7 @@
             getfuDataY(){//获取复盘数据
                 let self = this;
                 let year = self.thisyear.getFullYear();
-                if(process.env.NODE_ENV === 'development'){
-                    self.url = self.hrefLoction+'PdaWinYear.json?year='+year+'&isFinance=0';
-                };
+                self.url = self.hrefLoction+'PdaWinYear.json?year='+year+'&isFinance=0';
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);

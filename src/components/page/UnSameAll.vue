@@ -8,6 +8,7 @@
         </div>
         <div class="handle-box">
           <el-switch
+              @change="changeChu"
                 v-model="ischu"
                 on-color="#13ce66"
                 off-color="#ff4949">
@@ -102,13 +103,7 @@
             }
         },
         watch:{
-            ischu:function (val, oldVal) {
-                if(val==true){
-                    this.tableData=this.chuData;
-                }else {
-                    this.tableData=this.fuData;
-                }
-            }
+
         },
         methods: {
             setYear:function () {
@@ -116,7 +111,15 @@
                 this.getfuData();
                 console.log(this.thisyear)
             },
-            getchuData(){//获取初盘数据
+            changeChu:function () {
+                console.log(this.ischu);
+                if(this.ischu==true){
+                    this.tableData=this.chuData;
+                }else {
+                    this.tableData=this.fuData;
+                }
+            },
+            getchuData:function () {//获取初盘数据
                 let self = this;
                 let year = self.thisyear.getFullYear();
                 self.chartData=[];
@@ -126,21 +129,16 @@
                     console.log(response);
                   self.chuData=response.data.dataInfo.listData;
                   self.tableData= self.chuData;
-                  for (var i=0;i<self.chuData.length;i++){
-                      console.log("aaaa");
-                      self.chartData.push({name:i+1+"月",value:self.chuData[i].countNumber})
-                  }
-                  console.log(self.chartData);
-                }, (response) => {
+
+            }, (response) => {
                     console.log('error');
                 });
-            },
-            getfuData(){//获取复盘数据
+                },
+            getfuData:function () {
+                //获取复盘数据
                 let self = this;
                 let year = self.thisyear.getFullYear();
-                if(process.env.NODE_ENV === 'development'){
-                    self.url = self.hrefLoction+'PdaDifferYear.json?year='+year+'&isFinance=1';
-                };
+                self.url = self.hrefLoction+'PdaDifferYear.json?year='+year+'&isFinance=1';
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);

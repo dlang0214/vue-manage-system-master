@@ -15,7 +15,7 @@
                 <br>
                 <el-checkbox disabled checked>人员盘点信息</el-checkbox>
                 <br>
-                <el-checkbox disabled checked>盘亏盘赢信息汇总</el-checkbox>
+                <el-checkbox disabled checked>盘亏盘盈信息汇总</el-checkbox>
                 <br>
                 <el-checkbox disabled checked>差异化信息汇总</el-checkbox>
                 <br>

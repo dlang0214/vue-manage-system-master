@@ -7,23 +7,26 @@
             </el-breadcrumb>
         </div>
         <el-tabs v-model="activeName">
-            <el-tab-pane label="固定资产录入" name="first">
+            <el-tab-pane label="盘点信息录入" name="first">
                 <div class="form-box">
                 <el-form ref="form" :model="formGu" label-width="100px">
                     <el-form-item label="资产编号">
-                        <el-input v-model="formGu.invCode"></el-input>
+                        <el-input v-model="formGu.invCode" placeholder="请输入资产编号"></el-input>
                     </el-form-item>
                     <el-form-item label="盘点时间">
                         <el-date-picker type="date" placeholder="选择日期" v-model="date1" style="width: 100%;"></el-date-picker>
                     </el-form-item>
                     <el-form-item label="盘点人">
-                        <el-input v-model="formGu.invUserNo"></el-input>
+                        <el-input v-model="formGu.invUserNo" placeholder="请输入盘点人工号"></el-input>
                     </el-form-item>
                     <el-form-item label="备注">
                         <el-input v-model="formGu.invAdditional"></el-input>
                     </el-form-item>
                     <el-form-item label="盘点部门">
-                        <el-input v-model="formGu.pdaDesc"></el-input>
+                        <el-input v-model="formGu.pdaDesc" placeholder="请输入盘点部门"></el-input>
+                    </el-form-item>
+                    <el-form-item label="使用部门">
+                        <el-input v-model="formGu.desc" placeholder="请输入使用部门"></el-input>
                     </el-form-item>
 
                     <el-form-item label="初盘/复盘">
@@ -41,10 +44,10 @@
                     </el-form-item>
                     <el-form-item label="盘点状态">
                         <el-radio-group v-model="formGu.invStutas">
-                            <el-radio label="1">表示正常使用</el-radio>
-                            <el-radio label="2">表示闲置资产</el-radio>
-                            <el-radio label="3">表示待维修</el-radio>
-                            <el-radio label="4">表示待报废</el-radio>
+                            <el-radio label="1">正常使用</el-radio>
+                            <el-radio label="2">闲置资产</el-radio>
+                            <el-radio label="3">待维修</el-radio>
+                            <el-radio label="4">待报废</el-radio>
                         </el-radio-group>
                     </el-form-item>
 
@@ -55,27 +58,26 @@
                 </el-form>
             </div>
             </el-tab-pane>
-            <el-tab-pane label="异常资产录入" name="second">
+            <el-tab-pane label="资产盘点异常录入" name="second">
                 <div class="form-box">
                 <el-form ref="form" :model="form" label-width="100px">
                     <el-form-item label="资产编号">
-                        <el-input v-model="form.tagNumber"></el-input>
+                        <el-input v-model="form.tagNumber" placeholder="请输入资产编号"></el-input>
                     </el-form-item>
                     <el-form-item label="资产名称">
-                        <el-input v-model="form.description"></el-input>
+                        <el-input v-model="form.description" placeholder="请输入资产名称"></el-input>
                     </el-form-item>
                     <el-form-item label="盘点时间">
                         <el-date-picker type="date" placeholder="选择日期" v-model="date2" style="width: 100%;"></el-date-picker>
                     </el-form-item>
                     <el-form-item label="规格型号">
-                        <el-input v-model="form.modelNumber"></el-input>
+                        <el-input v-model="form.modelNumber" placeholder="请输入规格型号"></el-input>
                     </el-form-item>
                     <el-form-item label="使用部门">
-                        <el-input v-model="form.desc"></el-input>
+                        <el-input v-model="form.desc"  placeholder="请输入使用部门"></el-input>
                     </el-form-item>
 
                     <el-form-item label="初盘/复盘">
-
                             <el-radio-group v-model="form.isFinance">
                                 <el-radio label="0">初盘</el-radio>
                                 <el-radio label="1">复盘</el-radio>
@@ -111,6 +113,7 @@
                     invAdditional:"",
                     isFinance:"0",
                     pdaDesc:"",
+                    desc:""
                 },
                 form:{
                     tagNumber:"",
@@ -164,6 +167,9 @@
                     data:vm.formGu,
                     dataType:"json",
                     success:function (data) {
+                        if(data.statusCode == 0){
+                            vm.formGu = { }
+                        }
                         vm.$message(data.message);
                     },
                     error:function (da) {

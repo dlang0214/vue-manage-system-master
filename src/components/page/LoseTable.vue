@@ -3,7 +3,7 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-menu"></i> 表格</el-breadcrumb-item>
-                <el-breadcrumb-item>盘亏部门信息</el-breadcrumb-item>
+                <el-breadcrumb-item>盘盈部门信息</el-breadcrumb-item>
             </el-breadcrumb>
 
         </div>
@@ -45,7 +45,7 @@
              </span>
             <!--<span style="border-radius: 5px;border:  solid 1px #bfcbd9;padding: 8px" @click="getImport('table')">导出excel</span>-->
         </div>
-        <el-table :data="tableData" border style="width: 100%;margin-top: 10px" ref="multipleTable" >
+        <el-table :data="tableData" border style="width: 100%;margin-top: 10px" ref="multipleTable" height="520">
             <el-table-column prop="DESCNAME" label="部门" sortable >
             </el-table-column>
             <!--<el-table-column prop="countNumber" label="列管资产未盘点总数" sortable width="200">-->
@@ -60,6 +60,9 @@
             </el-table-column>
         </el-table>
         <div class="bgmess" v-show="bgmess">
+            <span style="display: block;position: absolute;top: 40px;left: 250px;z-index: 9999;color: #fff;display: flex;align-items:flex-end ">
+                <el-button @click="download">下载全部</el-button>
+          </span>
             <div class="bgclose" @click="bgclose"><i class="el-icon-close"></i></div>
             <div class="bgcontent">
                 <el-table :data="perTaData" border style="width: 100%" ref="multipleTable"
@@ -91,7 +94,7 @@
                     <el-pagination
                         @current-change ="handleCurrentChange"
                         layout="prev, pager, next"
-                        :total="100">
+                        :total="totolPage">
                     </el-pagination>
                 </div>
             </div>
@@ -110,94 +113,7 @@
 
 <script>
     import axios from 'axios';
-    var idTmr;
-    function getExplorer() {
-        var explorer = window.navigator.userAgent;
-        if (explorer.indexOf("MSIE") >= 0 || (explorer.indexOf("Windows NT 6.1;") >= 0 && explorer.indexOf("Trident/7.0;") >= 0)) {
-            return 'ie';   //ie
-        }
-        else if (explorer.indexOf("Firefox") >= 0) {
-            return 'Firefox';  //firefox
-        }
-        else if (explorer.indexOf("Chrome") >= 0) {
-            return 'Chrome'; //Chrome
-        }
-        else if (explorer.indexOf("Opera") >= 0) {
-            return 'Opera';  //Opera
-        }
-        else if (explorer.indexOf("Safari") >= 0) {
-            return 'Safari';   //Safari
-        }
-    }
-    //此方法为ie导出之后,可以保留table格式的方法
-    function getIEsink(tableid) {
-        var curTbl = document.getElementById(tableid);
-        if (curTbl == null || curTbl == "") {
-            alert("没有数据");
-            return false;
-        }
-        var oXL;
-        try {
-            oXL = new ActiveXObject("Excel.Application"); //创建AX对象excel
-        } catch (e) {
-            alert("无法启动Excel!\n\n如果您确信您的电脑中已经安装了Excel，" + "那么请调整IE的安全级别。\n\n具体操作：\n\n" + "工具 → Internet选项 → 安全 → 自定义级别 → 对没有标记为安全的ActiveX进行初始化和脚本运行 → 启用");
-            return false;
-        }
 
-        var oWB = oXL.Workbooks.Add();
-        var oSheet = oWB.ActiveSheet;
-        var sel = document.body.createTextRange();
-        sel.moveToElementText(curTbl);
-        sel.select();
-        sel.execCommand("Copy");
-        oSheet.Paste();
-        oXL.Visible = true;
-    }
-    //此方法为ie导出之后,不保留table格式的方法
-    function getIEnotsink(tableid) {
-        var curTbl = document.getElementById(tableid);
-        if (curTbl == null || curTbl == "") {
-            alert("没有数据");
-            return false;
-        }
-        var oXL;
-        try {
-            oXL = new ActiveXObject("Excel.Application"); //创建AX对象excel
-        } catch (e) {
-            alert("无法启动Excel!\n\n如果您确信您的电脑中已经安装了Excel，" + "那么请调整IE的安全级别。\n\n具体操作：\n\n" + "工具 → Internet选项 → 安全 → 自定义级别 → 对没有标记为安全的ActiveX进行初始化和脚本运行 → 启用");
-            return false;
-        }
-
-        var oWB = oXL.Workbooks.Add();
-        var oSheet = oWB.ActiveSheet;
-        var Lenr = curTbl.rows.length;
-        for (i = 0; i < Lenr; i++) {
-            var Lenc = curTbl.rows(i).cells.length;
-            for (j = 0; j < Lenc; j++) {
-                oSheet.Cells(i + 1, j + 1).value = curTbl.rows(i).cells(j).innerText;
-            }
-        }
-        oXL.Visible = true;
-    }
-    function Cleanup() {
-        window.clearInterval(idTmr);
-        CollectGarbage();
-    }
-    var tableToExcel = (function () {
-        var uri = 'data:application/vnd.ms-excel;base64,',
-            template = '<html><head><meta charset="UTF-8"></head><body><table border="1">{table}</table></body></html>',
-            base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) },
-            format = function (s, c) {
-                return s.replace(/{(\w+)}/g,
-                    function (m, p) { return c[p]; })
-            };
-        return function (table, name) {
-            if (!table.nodeType) table = document.getElementById(table)
-            var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
-            window.location.href = uri + base64(format(template, ctx))
-        }
-
-    })();
     export default {
         data: function(){
             return {
@@ -252,7 +168,8 @@
                 perTaData:[],//背景数据
                 bgItemData: {},
                 itemTile:"初盘信息详情",
-                userNo:""//选中行的工号
+                userNo:"",//选中行的工号
+                totolPage:100
             }
         },
         created(){
@@ -261,8 +178,10 @@
         watch:{
             ischu:function (val, oldVal) {
                 if(val==true){
+                    this.selcont = "";
                     this.getchuData(1)
                 }else {
+                    this.selcont = "";
                     this.getchuData(0)
                 }
             }
@@ -286,7 +205,13 @@
                 if(self.thisyear==null || !self.thisyear){
                     return 0;
                 }
-                self.url =self.hrefLoction+ 'PdaWinYearDesc.json?year='+self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+(self.month+1);
+                var mon
+                if(self.month+1 > 10){
+                    mon = self.month+1
+                }else {
+                    mon = "0"+  self.month
+                }
+                self.url =self.hrefLoction+ 'PdaWinYearDesc.json?year='+self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+mon;
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
@@ -311,7 +236,7 @@
                 this.getchuData(isFin);
             },
             //获取背景显示数据
-            setBgtable:function () {
+            setBgtable:function (page) {
                 console.log("aaa");
                 let self = this;
                 var isFin;
@@ -321,38 +246,63 @@
                 }else {
                     isFin=0
                 }
+                var mon
+                if(self.month+1 > 10){
+                    mon = self.month+1
+                }else {
+                    mon = "0"+  self.month
+                }
                 self.url =self.hrefLoction+ 'PdaWinByCondition.json?year='
-                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+(self.month+1)+
-                    '&pdaDesc='+self.userNo+'&pageSize=100';
+                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+mon+
+                    '&pdaDesc='+self.userNo+'&pageSize=10'+"&page="+page;
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
                     self.perTaData=response.data.dataInfo.listData;
+                    self.totolPage=response.data.dataInfo.pageInfo.totalRecord;
                     this.bgmess=true
                 }, (response) => {
                     console.log('error');
                 });
             },
+            download:function () {
+                var self = this
+                var isFin;
+
+                if(self.ischu==true){//初复盘选择 1复盘 0初盘
+                    isFin=1
+                }else {
+                    isFin=0
+                }
+                var mon
+                if(self.month+1 > 9){
+                    mon = self.month+1
+                }else {
+                    mon = "0"+  (self.month+1)
+                }
+                window.location.href=this.hrefLoction+'downloadExcel.json?year='
+                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+mon+
+                    '&pdaDesc='+self.userNo+"&method=pdaByWin"+'&pageSize=-1';
+            },
             //盘点详情点击事件
             showPer:function (userNo) {
                 console.log(userNo);
                 this.userNo=userNo;
-                this.setBgtable();
+                this.setBgtable(1);
 
             },
             //根据条件查询（正则筛选）
             selectPer:function () {
                 var vm =this;
                 var m=[];
-                console.log( vm.chuData[vm.month]);
+                console.log( vm.chuData[0]);
                 if(vm.chuData.length<1){
                     return 0
                 }
-                for (var i in vm.chuData[vm.month].isF){
-                    if(new RegExp(vm.selcont).test(vm.chuData[vm.month].isF[i].DESCNAME)){
+                for (var i in vm.chuData[0].isF){
+                    if(new RegExp(vm.selcont).test(vm.chuData[0].isF[i].DESCNAME)){
 //                    vm.mainData=vm.mainData[i]
-                        m.push(vm.chuData[vm.month].isF[i])
-
+                        m.push(vm.chuData[0].isF[i])
                     }
                 }
                 vm.tableData=m;
@@ -399,7 +349,7 @@
             },
             //背景页码更换函数
             handleCurrentChange(val){
-                console.log(val);
+                this.setBgtable(val);
 
             },
 
