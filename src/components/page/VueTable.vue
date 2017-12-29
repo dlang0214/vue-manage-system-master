@@ -7,7 +7,7 @@
             </el-breadcrumb>
 
         </div>
-        <span style="position: absolute;top: 20px;right: 40px">
+         <span style="position: absolute;top: 20px;right: 40px">
                <el-switch
                    v-model="ischu"
                    on-color="#13ce66"
@@ -25,7 +25,7 @@
 
         </span>
         <div>
-            <span style="width: 30%;display: inline-block">
+           <span style="width: 30%;display: inline-block">
             月份选择：
                 <el-select v-model="month" placeholder="请选择"  style="width: 50%" @change="changeMonth">
                     <el-option

@@ -7,8 +7,11 @@
             </el-breadcrumb>
         </div>
         <div class="plugins-tips">
-           导入的文件必须是Excel文件，格式如下（必须严格遵循下面格式）
-            注:盘点状态必须为“正常使用”、“闲置资产”、“待维修”、“待报废”四种
+           导入的文件必须是Excel文件，格式如下（必须严格遵循下面格式）<br>
+
+           注:<br> 1.盘点状态必须为“正常使用”、“闲置资产”、“待维修”、“待报废”四种<br>
+               2.excel表头必须为“盘点年月”、“资产编号”、“盘点时间”、“盘点人工号”、“盘点状态”、“是否更改标签”、“盘点备注”、“初盘/复盘”、“盘点部门”、“使用部门"<br>
+            3.盘点部门和使用部门必须是部门表里的数据<span style="color: #4db3ff;margin-left: 10px" @click="seePartMent">查看部门表</span>
             <!--<el-button icon="upload2">下载模板</el-button>-->
         </div>
         <el-tabs v-model="activeName2" >
@@ -119,7 +122,16 @@
                 </div>
             </el-tab-pane>
         </el-tabs>
+        <div class="showPart" v-show="showPart">
+            <div class="partList">
 
+                <div class="closePart" @click="showPart = !showPart"><i class="el-icon-close"></i></div>
+                <div style="text-align: center;height: 40px;line-height: 40px;color: #4db3ff">pda部门详情</div>
+                <div v-for="i in partList " class="partItem">
+                    {{i}}
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -219,7 +231,9 @@
                         pDept:"信息中心",
                         isF:"初盘",
                     },
-                ]
+                ],
+                partList:[],//部门列表
+                showPart:false
             }
         },
 
@@ -251,8 +265,8 @@
                     success: function (data) {
                         var obj = JSON.parse(data);
                         console.log(obj);
-                        console.log(obj.dataInfo)
-                        if(obj["extData"] == -10000){
+                        console.log(obj.dataInfo);
+                        if(obj["extData"] == -10000 || obj["statusCode"] != 0){
                             vm.$message(obj["message"]);
                             return 0;
                         }
@@ -292,7 +306,7 @@
                     success: function (data) {
                         console.log(data)
                         var obj = JSON.parse(data);
-                        if(obj["extData"] == -10000){
+                        if(obj["extData"] == -10000 || obj["statusCode"] != 0){
                             vm.$message(obj["message"]);
                             return 0;
                         }
@@ -306,6 +320,19 @@
                         vm.$message("上传错误");
                     }
                 })
+            },
+            seePartMent:function () {
+                var vm = this;
+                var url =vm.hrefLoction+'findDesc.json';
+                vm.$axios.get( url
+                ).then((response) => {
+                    console.log(response);
+                    vm.partList = response.data.dataInfo.listData;
+                    vm.showPart = true;
+
+                }, (response) => {
+                    console.log('error');
+                });
             }
         },
         computed: {
@@ -329,6 +356,43 @@
         padding-left: 30px;
         padding-top: 10px;
         padding-bottom: 10px;
+    }
+    .showPart{
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0,0,0,0.4);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .partList{
+        background-color: #fff;
+        width: 400px;
+        height: 600px;
+        overflow-y: scroll;
+        position: relative;
+    }
+    .partItem{
+        padding-left: 20px;
+        height: 40px;
+        line-height: 40px;
+        border-bottom: solid 1px #eee;
+    }
+    .closePart{
+        position: absolute;
+        top: 5px;
+        right: 0;
+        width: 30px;
+        height: 30px;
+        border: solid #666 1px;
+        color: #666;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
 </style>
