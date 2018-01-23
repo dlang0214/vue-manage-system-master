@@ -9,7 +9,7 @@
         <el-tabs v-model="activeName">
             <el-tab-pane label="盘点信息录入" name="first">
                 <div class="form-box">
-                <el-form ref="form" :model="formGu" label-width="100px">
+                <el-form ref="form" :model="formGu" label-width="100px" style="width: 350px">
                     <el-form-item label="资产编号">
                         <el-input v-model="formGu.invCode" placeholder="请输入资产编号"></el-input>
                     </el-form-item>
@@ -42,7 +42,7 @@
                             >
                             </el-switch>
                     </el-form-item>
-                    <el-form-item label="盘点状态">
+                    <el-form-item label="盘点状态" style="width: 500px">
                         <el-radio-group v-model="formGu.invStutas">
                             <el-radio label="1">正常使用</el-radio>
                             <el-radio label="2">闲置资产</el-radio>

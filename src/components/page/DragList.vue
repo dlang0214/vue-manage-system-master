@@ -35,13 +35,13 @@
                 <el-table-column prop="department" label="部门" sortable>
                 </el-table-column>
                 <el-table-column  label="盘点状态" sortable >
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <span v-if="scope.row.isFinanceUser == 1">复盘人员</span>
                         <span v-else>初盘人员</span>
                      </template>
                 </el-table-column>
                 <el-table-column label="操作" width="180">
-                    <template scope="scope">
+                    <template slot-scope="scope">
 
                         <el-button  @click="deletePer(scope.row.userNo)">删除</el-button>
                         <el-button  @click="updataPer(scope.row.userNo)">修改</el-button>

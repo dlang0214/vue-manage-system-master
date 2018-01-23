@@ -15,7 +15,7 @@
             <!--<el-button icon="upload2">下载模板</el-button>-->
         </div>
         <el-tabs v-model="activeName2" >
-            <el-tab-pane label="盘点信息导入" name="first">
+            <el-tab-pane label="批量导入盘点信息" name="first">
                 <el-table
                     :data="tableData"
                     stripe
@@ -70,57 +70,59 @@
                        <div v-for="i in errorlist">{{i}}</div>
                 </div>
                 <div style="margin-top: 10px">
-                    <el-button type="primary" style="position: relative">选择文件<i class="el-icon-upload el-icon--right"></i>
-                        <input type="file" id="file" @change="getFile" style="position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0"/>
-                    </el-button>{{fileName}}
+                    <el-button type="primary" @click="downloadModel">下载模板</el-button>
+
+                    <!--<el-button type="primary" style="position: relative">选择文件<i class="el-icon-upload el-icon&#45;&#45;right"></i>-->
+                        <input type="file" id="file" value="选择文件" @change="getFile" style="border: solid 1px #eee;border-radius: 3px;"/>
+                    <!--</el-button>{{fileName}}-->
                     <el-button type="primary" style="position: relative" @click="uploadFile">确认上传<i class="el-icon-upload el-icon--right"></i>
                     </el-button>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="资产盘点异常报告导入" name="second">
-                <el-table
-                    :data="tableDataY"
-                    stripe
-                    style="width: 100%">
-                    <el-table-column
-                        prop="pNo"
-                        label="资产编号"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                        prop="pName"
-                        label="资产名称"
-                        width="180">
-                    </el-table-column>
-                    <el-table-column
-                        prop="stats"
-                        label="规格型号">
-                    </el-table-column>
-                    <el-table-column
-                        prop="pDept"
-                        label="使用部门">
-                    </el-table-column>
-                    <el-table-column
-                        prop="date"
-                        label="未盘点年月">
-                    </el-table-column>
-                    <el-table-column
-                        prop="isF"
-                        label="初盘/复盘">
-                    </el-table-column>
-                </el-table>
-                <div class="errorMess" v-show="errorMessY" >
-                    批量导入错误信息：<br>
-                    <div v-for="i in errorlistY">{{i}}</div>
-                </div>
-                <div style="margin-top: 10px">
-                    <el-button type="primary" style="position: relative">选择文件<i class="el-icon-upload el-icon--right"></i>
-                        <input type="file" id="file1" @change="getFile1" style="position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0"/>
-                    </el-button>{{fileName1}}
-                    <el-button type="primary" style="position: relative" @click="uploadFile1">确认上传<i class="el-icon-upload el-icon--right"></i>
-                    </el-button>
-                </div>
-            </el-tab-pane>
+            <!--<el-tab-pane label="资产盘点异常报告导入" name="second">-->
+                <!--<el-table-->
+                    <!--:data="tableDataY"-->
+                    <!--stripe-->
+                    <!--style="width: 100%">-->
+                    <!--<el-table-column-->
+                        <!--prop="pNo"-->
+                        <!--label="资产编号"-->
+                    <!--&gt;-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column-->
+                        <!--prop="pName"-->
+                        <!--label="资产名称"-->
+                        <!--width="180">-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column-->
+                        <!--prop="stats"-->
+                        <!--label="规格型号">-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column-->
+                        <!--prop="pDept"-->
+                        <!--label="使用部门">-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column-->
+                        <!--prop="date"-->
+                        <!--label="未盘点年月">-->
+                    <!--</el-table-column>-->
+                    <!--<el-table-column-->
+                        <!--prop="isF"-->
+                        <!--label="初盘/复盘">-->
+                    <!--</el-table-column>-->
+                <!--</el-table>-->
+                <!--<div class="errorMess" v-show="errorMessY" >-->
+                    <!--批量导入错误信息：<br>-->
+                    <!--<div v-for="i in errorlistY">{{i}}</div>-->
+                <!--</div>-->
+                <!--<div style="margin-top: 10px">-->
+                    <!--<el-button type="primary" style="position: relative">选择文件<i class="el-icon-upload el-icon&#45;&#45;right"></i>-->
+                        <!--<input type="file" id="file1" @change="getFile1" style="position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0"/>-->
+                    <!--</el-button>{{fileName1}}-->
+                    <!--<el-button type="primary" style="position: relative" @click="uploadFile1">确认上传<i class="el-icon-upload el-icon&#45;&#45;right"></i>-->
+                    <!--</el-button>-->
+                <!--</div>-->
+            <!--</el-tab-pane>-->
         </el-tabs>
         <div class="showPart" v-show="showPart">
             <div class="partList">
@@ -286,6 +288,9 @@
                 console.log(file);
                 this.fileName1=file.name
                 this.files1[0]=file;
+            },
+            downloadModel:function () {
+                window.location.href="http://appinter.sunwoda.com/download/pda/pdaP.xlsx";
             },
             uploadFile1:function () {
                 var vm = this;

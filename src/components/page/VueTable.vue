@@ -49,7 +49,7 @@
              </span>
             <span style="border-radius: 5px;border:  solid 1px #bfcbd9;padding: 8px" @click="getImport('table')">导出excel</span>
         </div>
-        <el-table :data="tableData" border style="width: 100%;margin-top: 10px" ref="multipleTable"  height="520">
+        <el-table :data="tableData" border style="width: 100%;margin-top: 10px" ref="multipleTable"  height="520" v-loading.body="loading">
             <el-table-column prop="userNo" label="工号" sortable width="150">
             </el-table-column>
             <el-table-column prop="userName" label="姓名" sortable width="120">
@@ -62,10 +62,11 @@
             </el-table-column>
 
             <el-table-column label="操作" width="180">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button size="small" @click="showPer(scope.row.userNo)">查看盘点详情</el-button>
                 </template>
             </el-table-column>
+
         </el-table>
         <div class="bgmess" v-show="bgmess">
             <div class="bgclose" @click="bgclose"><i class="el-icon-close"></i></div>
@@ -97,7 +98,7 @@
                     <el-table-column prop="desc" label="资产单位" sortable >
                     </el-table-column>
                     <el-table-column label="操作" width="200">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <el-button size="small" @click="messShow(scope.row,1)">初盘详情</el-button>
                             <el-button size="small" @click="messShow(scope.row,2)">复盘详情</el-button>
                             <!--<el-button size="small" @click="messShow(scope.row,3)">其他信息</el-button>-->
@@ -214,7 +215,7 @@
         return function (table, name) {
             if (!table.nodeType) table = document.getElementById(table)
             var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
-            window.location.href = uri + base64(format(template, ctx))
+            window.location = uri + base64(format(template, ctx))
         }
 
     })();
@@ -223,6 +224,8 @@
         data: function(){
             return {
                 ischu:true,//初盘or复盘
+                isFinance:1,
+                loading:false,
                 iszi:true,//资管or列管
                 tableData:[],//显示的数据
                 chuData:[],//获取的数据
@@ -285,11 +288,13 @@
             ischu:function (val, oldVal) {
                 if(val==true){
                     this.selcont = "";
-                    this.getchuData(1);
+                    this.isFinance=1,
+                    this.getchuData();
 
                 }else {
                     this.selcont = "";
-                    this.getchuData(0)
+                    this.isFinance=0,
+                    this.getchuData()
                 }
             }
         },
@@ -305,17 +310,18 @@
                 this.bgmess=false
             },
             //获取开始数据数据 isFin初盘or复盘
-            getchuData(isFin){
+            getchuData(){
                 let self = this;
-                console.log(self.thisyear);
+               self.loading = true
 
                 if(self.thisyear==null || !self.thisyear){
                     return 0;
                 }
-                self.url = self.hrefLoction+'PdaNumberByUser.json?year='+self.thisyear.getFullYear()+'&isFinance='+isFin;
+                self.url = self.hrefLoction+'PdaNumberByUser.json?year='+self.thisyear.getFullYear()+'&isFinance='+self.isFinance;
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
+                    self.loading = false;
                     self.chuData=response.data.dataInfo.listData;//获取开始数据
                     self.tableData= self.chuData[self.month].pdaNumberList;//获取开始表格数据
 
@@ -346,7 +352,7 @@
                 if(self.month+1 > 10){
                     mon = self.month+1
                 }else {
-                    mon = "0"+  self.month
+                    mon = "0"+  (self.month+1)
                 }
                 if(self.iszi==true){//资管、列管选择
                     isZ=1
@@ -354,7 +360,7 @@
                     isZ=0
                 }
                 self.url = self.hrefLoction+'PdaByCondition.json?year='
-                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+mon+
+                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+(self.month+1)+
                     '&userNo='+self.userNo+'&pageSize=10'+'&isAdd='+isZ+"&page="+page;
                 self.$axios.get( self.url
                 ).then((response) => {
@@ -474,8 +480,8 @@
                 }else {
                     mon = "0"+  (self.month+1)
                 }
-                window.location.href=this.hrefLoction+'downloadExcel.json?year='
-                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+mon+
+                window.location=this.hrefLoction+'downloadExcel.json?year='
+                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+(self.month+1)+
                     '&userNo='+self.userNo+'&isAdd='+isZ+"&method=pdaByUser"+'&pageSize=-1';
             },
             //导出excel

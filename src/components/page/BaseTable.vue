@@ -23,7 +23,7 @@
             placeholder="选择年" @change="setYear">
         </el-date-picker>
         </div>
-        <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+        <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange" v-loading.body="loading">
             <el-table-column prop="ym" label="日期" sortable width="150">
             </el-table-column>
             <el-table-column prop="countUserNoA" label="列管盘点总人数" sortable >
@@ -46,6 +46,7 @@
         },
         data() {
             return {
+                loading:false,
                 url:"",
                 tableData: [],//表格展示数据
                 chuData:[],   //初盘数据
@@ -114,6 +115,7 @@
             },
             getchuData(){//获取初盘数据
                 let self = this;
+                self.loading = true
                 let year = self.thisyear.getFullYear();
                 self.chartData=[];
                 self.url = self.hrefLoction+'PdaNumberYear.json?year='+year+'&isFinance=1';
@@ -122,6 +124,7 @@
                     console.log(response);
                   self.chuData=response.data.dataInfo.listData;
                   self.tableData= self.chuData;
+                  self.loading =false;
                 }, (response) => {
                     console.log('error');
                 });

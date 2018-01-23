@@ -52,7 +52,7 @@
                     <el-table-column prop="desc" label="资产单位" sortable width="180">
                     </el-table-column>
                     <el-table-column label="操作" width="200">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <el-button size="small" @click="messShow(scope.row,1)">初盘详情</el-button>
                             <el-button size="small" @click="messShow(scope.row,2)">复盘详情</el-button>
                             <!--<el-button size="small" @click="messShow(scope.row,3)">其他信息</el-button>-->

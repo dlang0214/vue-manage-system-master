@@ -9,7 +9,7 @@ import "babel-polyfill";
 import $ from 'jquery'
 Vue.use(ElementUI);
 Vue.prototype.$axios = axios;
-Vue.prototype.hrefLoction="http://appinter.sunwoda.com/common/PdaAssetUser/";
+Vue.prototype.hrefLoction="https://appinter.sunwoda.com/common/PdaAssetUser/";
 new Vue({
     router,
     render: h => h(App)

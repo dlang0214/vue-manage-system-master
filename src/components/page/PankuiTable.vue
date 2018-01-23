@@ -55,7 +55,7 @@
             </el-table-column>
 
             <el-table-column label="操作" width="180">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button size="small" @click="showPer(scope.row.pdaDesc)">查看盘点详情</el-button>
                 </template>
             </el-table-column>
@@ -75,7 +75,7 @@
             <div class="bgcontent">
                 <el-table :data="perTaData" border style="width: 100%" ref="multipleTable"
                           :row-class-name="tableRowClassName" >
-                    <el-table-column prop="invCode" label="资产编号" sortable width="100">
+                    <el-table-column prop="tagNumber" label="资产编号" sortable >
                     </el-table-column>
                     <el-table-column prop="fullName" label="责任人" sortable width="100">
                     </el-table-column>
@@ -90,7 +90,7 @@
                     <el-table-column prop="desc" label="资产单位" sortable width="180">
                     </el-table-column>
                     <el-table-column label="操作" width="200">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <el-button size="small" @click="messShow(scope.row,1)">初盘详情</el-button>
                             <el-button size="small" @click="messShow(scope.row,2)">复盘详情</el-button>
                             <!--<el-button size="small" @click="messShow(scope.row,3)">其他信息</el-button>-->
@@ -131,6 +131,7 @@
                 gxdis:false,
                 loading:true,
                 ischu:true,//初盘or复盘
+                isFinance:1,
                 iszi:true,//资管or列管
                 tableData:[],//显示的数据
                 chuData:[],//获取的数据
@@ -186,16 +187,18 @@
             }
         },
         created(){
-            this.getchuData(1);//开始获取复盘的信息
+            this.getchuData();//开始获取复盘的信息
         },
         watch:{
             ischu:function (val, oldVal) {
                 if(val==true){
                     this.selcont = "";
-                    this.getchuData(1)
+                    this.isFinance = 1;
+                    this.getchuData()
                 }else {
                     this.selcont = "";
-                    this.getchuData(0)
+                    this.isFinance = 0;
+                    this.getchuData()
                 }
             }
         },
@@ -211,7 +214,7 @@
                 this.bgmess=false
             },
             //获取开始数据数据 isFin初盘or复盘
-            getchuData(isFin){
+            getchuData(){
 
                 let self = this;
                 self.loading=true
@@ -224,9 +227,10 @@
                 if(self.month+1 > 10){
                     mon = self.month+1
                 }else {
-                    mon = "0"+  self.month
+                    mon = "0"+  (self.month+1)
                 }
-                self.url =self.hrefLoction+ 'PdaLossYesrMonth.json?year='+self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+mon;
+                console.log(self.isFinance);
+                self.url =self.hrefLoction+ 'PdaLossYesrMonth.json?year='+self.thisyear.getFullYear()+'&isFinance='+self.isFinance+'&month='+(self.month+1);
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
@@ -271,10 +275,10 @@
                 if(self.month+1 > 10){
                     mon = self.month+1
                 }else {
-                    mon = "0"+  self.month
+                    mon = "0"+  (self.month+1)
                 }
                 self.url =self.hrefLoction+ 'PdaLossYMOrDesc.json?year='
-                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+mon+
+                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+(self.month+1)+
                     '&pdaDesc='+self.userNo+'&pageSize=10'+'&isAdd='+isZ+"&page="+page;
                 self.$axios.get( self.url
                 ).then((response) => {
@@ -309,8 +313,8 @@
                 }else {
                     mon = "0"+  (self.month+1)
                 }
-                window.location.href=this.hrefLoction+'downloadExcel.json?year='
-                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+mon+
+                window.location=this.hrefLoction+'downloadExcel.json?year='
+                    +self.thisyear.getFullYear()+'&isFinance='+isFin+'&month='+(self.month+1)+
                     '&pdaDesc='+self.userNo+'&isAdd='+isZ+"&method=pdaByLoss"+'&pageSize=-1';
             },
             //盘点详情点击事件

@@ -26,21 +26,21 @@
                         placeholder="选择年" @change="setYear">
                     </el-date-picker>
                 </div>
-                <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+                <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange" v-loading.body="loading">
                     <el-table-column prop="ym" label="日期" sortable width="150">
                     </el-table-column>
                     <el-table-column  label="固定资产未盘点总数" sortable >
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             {{scope.row.isF.countNumber}}
                         </template>
                     </el-table-column>
                     <el-table-column  label="列管资产未盘点总数" sortable>
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             {{scope.row.isF.countANumber}}
                         </template>
                     </el-table-column>
                     <el-table-column label="未盘点状态" width="180">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <div v-if="scope.row.isF.isFinance==0">
                                 初盘
                             </div>
@@ -72,11 +72,11 @@
                         placeholder="选择年" @change="setYear">
                     </el-date-picker>
                 </div>
-                <el-table :data="tableDataY" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+                <el-table :data="tableDataY" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange" v-loading.body="loading">
                     <el-table-column prop="ym" label="日期" sortable width="150">
                     </el-table-column>
                     <el-table-column  label="固定资产未盘点总数" sortable >
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             {{scope.row.isF.countNumber}}
                         </template>
                     </el-table-column>
@@ -86,10 +86,11 @@
                         <!--</template>-->
                     <!--</el-table-column>-->
                     <el-table-column label="未盘点状态" width="180">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <div v-if="scope.row.isF.isFinance==0">
                                 初盘
                             </div>
+
                             <div v-else="scope.row.isF.isFinance==1">
                                 复盘
                             </div>
@@ -113,6 +114,7 @@
         data() {
             return {
                 url:"",
+                loading:false,
                 activeName:"first",
                 tableData: [],//表格展示数据
                 tableDataY:[],//盘盈表格数据
@@ -186,12 +188,14 @@
             },
             getchuData(){//获取初盘数据
                 let self = this;
+                self.loading=true
                 let year = self.thisyear.getFullYear();
                 self.chartData=[];
-                self.url = self.hrefLoction+'PdaLossYear.json?year='+year+'&isFinance=1';
+                self.url = self.hrefLoction+'PdaLossYear.json?year='+year+'&isFinance=0';
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
+                    self.loading = false
                   self.chuData=response.data.dataInfo.listData;
                   self.tableData= self.chuData;
                   for (var i=0;i<self.chuData.length;i++){
@@ -206,7 +210,7 @@
             getfuData(){//获取复盘数据
                 let self = this;
                 let year = self.thisyear.getFullYear();
-                self.url = self.hrefLoction+'PdaLossYear.json?year='+year+'&isFinance=0';
+                self.url = self.hrefLoction+'PdaLossYear.json?year='+year+'&isFinance=1';
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
@@ -219,12 +223,14 @@
             },
             getchuDataY(){//获取初盘数据
                 let self = this;
+                self.loading = true
                 let year = self.thisyear.getFullYear();
                 self.chartData=[];
-                self.url = self.hrefLoction+'PdaWinYear.json?year='+year+'&isFinance=1';
+                self.url = self.hrefLoction+'PdaWinYear.json?year='+year+'&isFinance=0';
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
+                    self.loading = false
                     self.chuDataY=response.data.dataInfo.listData;
                     self.tableDataY= self.chuDataY;
                 }, (response) => {
@@ -234,7 +240,7 @@
             getfuDataY(){//获取复盘数据
                 let self = this;
                 let year = self.thisyear.getFullYear();
-                self.url = self.hrefLoction+'PdaWinYear.json?year='+year+'&isFinance=0';
+                self.url = self.hrefLoction+'PdaWinYear.json?year='+year+'&isFinance=1';
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);

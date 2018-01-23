@@ -23,22 +23,22 @@
             placeholder="选择年" @change="setYear">
         </el-date-picker>
         </div>
-        <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+        <el-table :data="tableData" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange" v-loading.body="loading">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="ym" label="日期" sortable width="150">
             </el-table-column>
             <el-table-column  label="固定资产未盘点总数" sortable >
-                <template scope="scope">
+                <template slot-scope="scope">
                     {{scope.row.isF.countNumber}}
                 </template>
             </el-table-column>
             <el-table-column  label="列管资产未盘点总数" sortable>
-                <template scope="scope">
+                <template slot-scope="scope">
                     {{scope.row.isF.countANumber}}
                 </template>
             </el-table-column>
             <el-table-column label="未盘点状态" width="180">
-                <template scope="scope">
+                <template slot-scope="scope">
                  <div v-if="scope.row.isF.isFinance==0">
                      初盘
                  </div>
@@ -62,6 +62,7 @@
         data() {
             return {
                 url:"",
+                loading:false,
                 tableData: [],//表格展示数据
                 chuData:[],   //初盘数据
                 fuData:[],   //复盘数据
@@ -121,12 +122,14 @@
             },
             getchuData:function () {//获取初盘数据
                 let self = this;
+                self.loading =true;
                 let year = self.thisyear.getFullYear();
                 self.chartData=[];
                 self.url = self.hrefLoction+'PdaDifferYear.json?year='+year+'&isFinance=0';
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
+                    self.loading = false
                   self.chuData=response.data.dataInfo.listData;
                   self.tableData= self.chuData;
 

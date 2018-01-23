@@ -26,7 +26,7 @@
             return {
                 items: [
                     {
-                        icon: 'el-icon-setting',
+                        icon: 'el-icon-document',
                         index: 'readme',
                         title: '功能简述'
                     },
@@ -67,7 +67,7 @@
                         ]
                     },
                     {
-                        icon: 'el-icon-document',
+                        icon: 'el-icon-information',
                         index: '4',
                         title: '差异化数据报表',
                         subs: [
@@ -100,14 +100,6 @@
                                 index: 'vueeditor',
                                 title: '批量导入'
                             },
-//                            {
-//                                index: 'markdown',
-//                                title: 'markdown'
-//                            },
-//                            {
-//                                index: 'upload',
-//                                title: '文件上传'
-//                            }
                         ]
                     },
 //                    {
@@ -116,10 +108,22 @@
 //                        title: '图表'
 //                    },
                     {
-                        icon: 'el-icon-upload2',
-                        index: 'drag',
-                        title: '人员管理'
-                    }
+                        icon: 'el-icon-setting',
+                        index: '7',
+                        title: '管理员管理',
+                        subs: [
+                            {
+                                icon: 'el-icon-upload2',
+                                index: 'drag',
+                                title: '人员管理'
+                            },
+                            {
+                                index: 'download',
+                                title: '数据下载'
+                            },
+                        ]
+                    },
+
                 ]
             }
         },
