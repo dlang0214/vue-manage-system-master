@@ -266,6 +266,7 @@
                     mimeType: "multipart/form-data",
                     success: function (data) {
                         var obj = JSON.parse(data);
+
                         console.log(obj);
                         console.log(obj.dataInfo);
                         if(obj["extData"] == -10000 || obj["statusCode"] != 0){

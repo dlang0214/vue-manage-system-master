@@ -113,6 +113,10 @@
                         title: '管理员管理',
                         subs: [
                             {
+                                index: 'AuthorizationManagement',
+                                title: '权限管理'
+                            },
+                            {
                                 icon: 'el-icon-upload2',
                                 index: 'drag',
                                 title: '人员管理'
@@ -121,6 +125,15 @@
                                 index: 'download',
                                 title: '数据下载'
                             },
+                            {
+                                index: 'pandianbiao',
+                                title: '资产表管理'
+                            },
+                            {
+                                index: 'loseTnum',
+                                title: '无标签表管理'
+                            },
+
                         ]
                     },
 

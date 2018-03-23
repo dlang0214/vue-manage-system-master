@@ -73,10 +73,24 @@ export default new Router({
                     path: '/drag',
                     component: resolve => require(['../components/page/DragList.vue'], resolve)    // 拖拽列表组件
                 },
+
                 {
                     path: '/download',
                     component: resolve => require(['../components/page/download.vue'], resolve)    // 拖拽列表组件
+                },
+                {
+                    path: '/pandianbiao',
+                    component: resolve => require(['../components/page/pandianbiao.vue'], resolve)    // 资产表管理
+                },
+                {
+                    path: '/loseTnum',
+                    component: resolve => require(['../components/page/loseTnum.vue'], resolve)    // 无标签表管理
+                },
+                {
+                    path: '/AuthorizationManagement',
+                    component: resolve => require(['../components/page/AuthorizationManagement.vue'], resolve)    // 无标签表管理
                 }
+
             ]
         },
         {
