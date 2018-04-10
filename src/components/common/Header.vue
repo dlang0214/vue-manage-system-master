@@ -18,19 +18,19 @@
     export default {
         data() {
             return {
-                name: 'linxin'
+                name: 'wuyi'
             }
         },
         computed:{
             username(){
-                let username = localStorage.getItem('ms_username');
+                let username = JSON.parse(localStorage.getItem("pdaUserMess")).userName;
                 return username ? username : this.name;
             }
         },
         methods:{
             handleCommand(command) {
                 if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
+                    localStorage.removeItem('pdaUserMess')
                     this.$router.push('/login');
                 }
             }

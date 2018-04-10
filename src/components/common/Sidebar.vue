@@ -1,7 +1,7 @@
 <template>
     <div class="sidebar">
         <el-menu :default-active="onRoutes" class="el-menu-vertical-demo"  unique-opened router>
-            <template v-for="item in items">
+            <template v-for="item in datas">
                 <template v-if="item.subs">
                     <el-submenu :index="item.index">
                         <template slot="title"><i :class="item.icon"></i>{{ item.title }}</template>
@@ -117,9 +117,12 @@
                                 title: '权限管理'
                             },
                             {
-                                icon: 'el-icon-upload2',
-                                index: 'drag',
+                                index: 'userManage',
                                 title: '人员管理'
+                            },
+                            {
+                                index: 'roleManager',
+                                title: '角色管理'
                             },
                             {
                                 index: 'download',
@@ -134,15 +137,70 @@
                                 title: '无标签表管理'
                             },
 
+
                         ]
                     },
 
-                ]
+                ],
+                pids:[],
+                datas:[]
+
             }
         },
         computed:{
             onRoutes(){
                 return this.$route.path.replace('/','');
+            }
+        },
+        mounted:function () {
+            this.getData()
+        },
+        methods:{
+            getData:function () {
+                let self = this;
+                self.url = self.hrefLoction+'findUserRole.json?userNo='+JSON.parse(localStorage.getItem("pdaUserMess")).userNo;
+                self.$axios.get( self.url
+                ).then((response) => {
+                    console.log(response);
+                    self.loading = false;
+                    if(response.data.statusCode==0){
+                       for(var i=0;i<response.data.extData.length;i++){
+                           if( response.data.extData[i].isCheck==1){
+                           if($.inArray(response.data.extData[i].fPName,self.pids)>=0){
+
+                           }else {
+                               self.pids.push(response.data.extData[i].fPName);
+                               self.datas.push(
+                                   {icon: response.data.extData[i].incon,
+                                   index: response.data.extData[i].url,
+                                   title: response.data.extData[i].fPName,
+                                   subs:[]});
+                           }}
+                       }
+                       console.log(self.pids);
+
+
+                        for (var i = 0;i<self.pids.length;i++){
+                            for(var j=0;j<response.data.extData.length;j++){
+                                    if(response.data.extData[j].fPName == self.pids[i] &&  response.data.extData[j].isCheck=="1"){
+                                        self.datas[i].subs.push({
+                                            index: response.data.extData[j].url,
+                                            title: response.data.extData[j].pName
+                                        });
+                                    }
+
+
+                            }
+                        }
+                        console.log(self.datas);
+                    }
+                    else {
+                        self.$message(response.data.message)
+                    }
+
+                }, (response) => {
+                    console.log('error');
+                });
             }
         }
     }

@@ -41,12 +41,28 @@
                 const self = this;
                 self.$refs[formName].validate((valid) => {
                     if (valid) {
-                        if(self.ruleForm.password=="123456"){
-                            localStorage.setItem('ms_username',self.ruleForm.username);
-                            self.$router.push('/readme');
-                        }else {
-                            console.log(self.username);
-                        }
+                        $.ajax({
+                            type:"post",
+                            url:self.hrefLoction+'login.json',
+                            dataType:"json",
+                            data:{
+                                account:self.ruleForm.username,
+                                password:self.ruleForm.password
+                            },
+                            success:function(data){
+                                console.log(data);
+                                self.$message(data.message);
+                                if(data.statusCode == 0){
+
+                                    localStorage.setItem('pdaUserMess',JSON.stringify(data.dataInfo.listData[0]));
+                                    self.$router.push('/readme');
+                                }
+                            },
+                            error:function (data) {
+                                self.$message( {type: 'error',data:"请求失败"});
+                            },
+
+                        });
 
                     } else {
                         console.log('error submit!!');

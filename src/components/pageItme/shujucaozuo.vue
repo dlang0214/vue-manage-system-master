@@ -192,7 +192,7 @@
                 let self = this;
 
                 let ym = self.dateFns.format(self.yearMonth,"YYYYMM")
-                console.log(self.dateFns.format(self.yearMonth,"YYYYMM"));
+                console.log();
                 var mess = self.itemMess;
                 if(!mess.tagNumber || mess.tagNumber ==""){
                     self.$message("标签号不能为空");
@@ -204,7 +204,7 @@
                 }
                 mess.YM = ym;
                 mess.message = self.tableName;
-                mess.userNo = '170711124';
+                mess.userNo = JSON.parse(localStorage.getItem("pdaUserMess")).userNo;
               console.log(mess);
                 self.loading = true
                 $.ajax({
@@ -237,7 +237,7 @@
                 var mess = self.itemMess;
                 mess.YM = ym;
                 mess.message = self.tableName;
-                mess.updateUserNo = '170711124';
+                mess.updateUserNo = JSON.parse(localStorage.getItem("pdaUserMess")).userNo;
                 delete mess.addDate
                 console.log(mess);
                 $.ajax({

@@ -70,8 +70,8 @@ export default new Router({
                     component: resolve => require(['../components/page/BaseCharts.vue'], resolve)   // vue-schart组件
                 },
                 {
-                    path: '/drag',
-                    component: resolve => require(['../components/page/DragList.vue'], resolve)    // 拖拽列表组件
+                    path: '/userManage',
+                    component: resolve => require(['../components/page/userManage.vue'], resolve)    // 拖拽列表组件
                 },
 
                 {
@@ -89,6 +89,11 @@ export default new Router({
                 {
                     path: '/AuthorizationManagement',
                     component: resolve => require(['../components/page/AuthorizationManagement.vue'], resolve)    // 无标签表管理
+                },
+
+                {
+                    path: '/roleManager',
+                    component: resolve => require(['../components/page/roleManager.vue'], resolve)    // 无标签表管理
                 }
 
             ]

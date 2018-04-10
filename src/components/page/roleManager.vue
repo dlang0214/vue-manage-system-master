@@ -3,30 +3,25 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-menu"></i> 管理员管理</el-breadcrumb-item>
-                <el-breadcrumb-item>权限管理</el-breadcrumb-item>
+                <el-breadcrumb-item>角色管理</el-breadcrumb-item>
             </el-breadcrumb>
-
         </div>
         <div>
             <span>
-                <el-button type="primary" @click="showAdd">新增权限</el-button>
+                <el-button type="primary" @click="showAdd">新增角色</el-button>
             </span>
         </div>
         <el-table :data="chuData" border style="width: 100%;margin-top: 10px" ref="multipleTable"  height="520" v-loading.body="loading">
-            <el-table-column prop="pId" label="权限id" sortable>
+            <el-table-column prop="rId" label="权限id" sortable>
             </el-table-column>
-            <el-table-column prop="pName" label="权限名" sortable>
+            <el-table-column prop="rName" label="权限名" sortable>
             </el-table-column>
-            <el-table-column prop="fPName" label="父模块名" sortable>
+            <el-table-column prop="createDateStr" label="创建时间" sortable>
             </el-table-column>
-            <el-table-column prop="url" label="路由" sortabl>
-            </el-table-column>
-            <el-table-column prop="incon" label="图标" sortabl>
-            </el-table-column>
-
-            <el-table-column label="操作" width="180">
+            <el-table-column label="操作" width="220">
                 <template slot-scope="scope">
                     <el-button size="small" @click="showItem(scope.$index,scope.row)">查看详情</el-button>
+                    <el-button size="small" @click="showRole(scope.row)">设置权限</el-button>
                 </template>
             </el-table-column>
 
@@ -38,27 +33,9 @@
                 </div>
                 <ul>
                     <li>
-                        <span>权限名</span>
+                        <span>角色名</span>
                         <span>
-                            <el-input v-model="itemMess.pName" :disabled="able"></el-input>
-                        </span>
-                    </li>
-                    <li>
-                        <span>父模块名</span>
-                        <span>
-                            <el-input v-model="itemMess.fPName" :disabled="able"></el-input>
-                        </span>
-                    </li>
-                    <li>
-                        <span>路由</span>
-                        <span>
-                             <el-input v-model="itemMess.url" :disabled="able"></el-input>
-                        </span>
-                    </li>
-                    <li>
-                        <span>图标</span>
-                        <span>
-                             <el-input v-model="itemMess.incon" :disabled="able"></el-input>
+                            <el-input v-model="itemMess.rName" :disabled="able"></el-input>
                         </span>
                     </li>
                     <li style="display: flex;justify-content: center" v-show="showUpdata">
@@ -71,6 +48,24 @@
                     </li>
                 </ul>
 
+            </div>
+
+        </div>
+        <div class="bgmess" v-show="roleItem">
+            <div style="position: relative">
+                <div class="bgItemclose" @click="roleItem=false">
+                        <i class="el-icon-close"></i>
+                </div>
+                <el-transfer
+                    v-model="itemRoles"
+                    :titles="['未获得权限','已获得权限']"
+                    :props="{
+                          key: 'pId',
+                          label: 'pName'
+                        }"
+                    :data="allRoles">
+                </el-transfer>
+                <el-button type="primary" @click="upRoles">确定修改</el-button>
             </div>
 
         </div>
@@ -96,11 +91,15 @@
                 itemMess:{},
                 updoradd:"up",
                 bgItem:false,
-                deletelist:[], //删除的集合
+                roleItem:false,
+                deleteId:"", //删除的ID
+                allRoles:[],
+                itemRoles:[],
             }
         },
         created(){
             this.getchuData(1);//开始获取复盘的信息
+//            this.getRoles();
         },
         watch:{
 
@@ -138,27 +137,14 @@
             addpost:function () {
                 let self = this;
                 var mess = self.itemMess;
-                if(!mess.pName || mess.pName ==""){
-                    self.$message("权限名不能为空");
+                if(!mess.rName || mess.rName ==""){
+                    self.$message("角色名不能为空");
                     return 0;
                 }
-                if(!mess.fPName || mess.fPName ==""){
-                    self.$message("父权限名不能为空");
-                    return 0;
-                }
-                if(!mess.url || mess.url ==""){
-                    self.$message("权限路由不能为空");
-                    return 0;
-                }
-                if(!mess.incon || mess.incon ==""){
-                    self.$message("权限图标不能为空");
-                    return 0;
-                }
-              console.log(mess);
                 self.loading = true;
                 $.ajax({
                     type:"post",
-                    url:self.hrefLoction+'insertPdaPremission.json',
+                    url:self.hrefLoction+'insertRole.json',
                     dataType:"json",
                     data: mess,
                     success:function(data){
@@ -181,11 +167,13 @@
             updatepost:function () {
                 let self = this;
                 self.loading = true
-                var mess = self.itemMess;
+                var mess = {};
+                mess.rId =self.itemMess.rId;
+                mess.rName =self.itemMess.rName;
                 console.log(mess);
                 $.ajax({
                     type:"post",
-                    url:self.hrefLoction+'updatePremission.json',
+                    url:self.hrefLoction+'updateRole.json',
                     dataType:"json",
                     data: mess,
                     success:function(data){
@@ -204,12 +192,11 @@
                 });
             },
 
-//            传入删除内容 进行数据提交 mess:[{tagNumber:"30853 4",orderNumber:4,tableName:"PDA_INV_ITEM_ADDENDUM"}]
+
             deleteMess:function(mess){
                 let self = this;
                 self.loading = true;
-
-                self.url = self.hrefLoction+'deletePdaPremission.json?pId='+self.itemMess.pId;
+                self.url = self.hrefLoction+'deleteRole.json?rId='+self.itemMess.rId;
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
@@ -234,7 +221,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                   this.deleteMess(this.deletelist)
+                   this.deleteMess(this.deleteId)
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -242,11 +229,49 @@
                     });
                 });
             },
-//          开始获取数据    默认第一页  根据self.tableName 获取不同表数据
+
+            upRoles:function () {
+                let self = this;
+                var pram = [];
+                console.log(self.itemRoles);
+                for(var i=0;i<self.allRoles.length;i++){
+                    if($.inArray(self.allRoles[i].pId,self.itemRoles)>=0){
+                        console.log(self.allRoles[i].pId,self.itemRoles);
+                        pram.push({
+                            pId:self.allRoles[i].pId,isCheck:1
+                        })
+                    }else {
+                        pram.push({
+                            pId:self.allRoles[i].pId,isCheck:0
+                        })
+                    }
+
+                }
+                console.log(pram);
+                self.url = self.hrefLoction+'updateRoleOfPremissione.json?rId='+self.itemMess.rId+'&listStr='+JSON.stringify(pram);
+                self.$axios.get( self.url
+                ).then((response) => {
+                    console.log(response);
+                    self.loading = false;
+                    if(response.data.statusCode==0){
+                        self.$message(response.data.message);
+                        this.roleItem  = false;
+                        self.getchuData();
+
+                    }
+                    else {
+                        self.$message(response.data.message)
+                    }
+
+                }, (response) => {
+                    console.log('error');
+                });
+            },
+
             getchuData(page){
                 let self = this;
 //
-                self.url = self.hrefLoction+'findPremission.json';
+                self.url = self.hrefLoction+'findRole.json';
                 self.$axios.get( self.url
                 ).then((response) => {
                     console.log(response);
@@ -263,26 +288,32 @@
                     console.log('error');
                 });
             },
+
+            getRoles:function () {
+                let self = this;
+//
+                self.url = self.hrefLoction+'findPremission.json';
+                self.$axios.get( self.url
+                ).then((response) => {
+                    console.log(response);
+                    self.loading = false;
+                    if(response.data.statusCode==0){
+                        self.allRoles=response.data.dataInfo.listData;//获取开始数据
+                    }
+                    else {
+                        self.$message(response.data.message)
+                    }
+
+                }, (response) => {
+                    console.log('error');
+                });
+            },
 //          点击修改按钮，出现确定和取消按钮
             updateItem:function () {
                 this.able = false;
                 this.showUpdata = false;
             },
 
-//            月份修改重新获取数据
-            changeMonth:function () {
-                this.chuData=[];
-                this.getchuData(1)
-            },
-//页码修改重新获取数据
-            handleCurrentChange(val){
-                console.log(val);
-                this.getchuData(val);
-            },
-//维护按钮点击
-            weihu:function (index,item) {
-
-            },
 // 相信信息出现
             showItem:function(index,item){
                 this.updoradd = "up";
@@ -293,13 +324,22 @@
                 this.showUpdata=true;
                 this.tagNable = true;
 //      封装删除数据 [{tagNumber:"30853 4",orderNumber:4,tableName:"PDA_INV_ITEM_ADDENDUM"}]
-                var list = [{
-                    id:item.id,
-                    orderNumber:index,
-                    userNo:item.userNo
-                }]
-                this.deletelist= JSON.stringify(list)
-             }
+                this.deleteId = item.rId;
+             },
+            showRole:function (item) {
+                this.roleItem  = true;
+                this.itemRoles = [];
+                this.itemMess = item;
+                this.allRoles = item.cList;
+                for(var i=0;i<item.cList.length;i++){
+                    if(item.cList[i].isCheck == 1){
+                        this.itemRoles.push(item.cList[i].pId);
+                    }
+
+                }
+                console.log(this.allRoles);
+                console.log(this.itemRoles);
+            }
 
         },
         computed:{
